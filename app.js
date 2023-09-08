@@ -3,6 +3,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const product = require("./models/product");
 const app = express();
+
+const productRoute = require('./routes/products-route');
+const usersRoute =  require('./routes/users-route');
+
 mongoose
     .connect(
         "mongodb+srv://aysid:aysid@cluster0.n8ceegw.mongodb.net/?retryWrites=true&w=majority"
@@ -29,29 +33,8 @@ app.use((req, res, next) => {
 });
 
 
-app.post("/api/addProduct", (req, res, next) => {
-    const post = new product({
-        name: req.body.title,
-        desc: req.body.content
-    });
-    post.save().then(createdPost => {
-        res.status(201).json({
-            message: "Post added successfully",
-            postId: createdPost._id
-        });
-    });
-});
-app.get("/api/allproducts", (req, res, next) => {
-    Post.find().then(documents => {
-        res.status(200).json({
-            message: "Posts fetched successfully!",
-            Products: documents
-        });
-    });
-});
-app.delete("/api/Product/:id", (req, res, next) => {
-    Post.deleteOne({ _id: req.params.id }).then(result => {
-        console.log(result);
-        res.status(200).json({ message: "Products deleted!" });
-    });
-});
+app.use("/api/products", productRoute);
+app.use("/api/users", usersRoute);
+
+
+

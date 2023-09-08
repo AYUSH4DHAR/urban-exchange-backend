@@ -15,11 +15,11 @@ const productSchema  = mongoose.Schema(
             type : String,
             required : true
         },
-        Note : {
+        note : {
             type : String,
             required : false
         },
-        model : {
+        modelNo : {
             type :  String
         },
         category : {

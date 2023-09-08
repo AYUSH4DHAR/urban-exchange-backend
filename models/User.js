@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require('mongoose-unique-validator');
 
-mongoose.set("useCreateIndex", true);
-// DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
+// mongoose.set("useCreateIndex", true);
+// ---------------------------------------------------------------$$$$$$$$$$$$$_---------------
+//can look into indexing later @sidharth
 
 const userSchema = mongoose.Schema(
   {
