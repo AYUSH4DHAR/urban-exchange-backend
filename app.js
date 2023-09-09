@@ -1,11 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const product = require("./models/product");
 const app = express();
 
-const productRoute = require('./routes/products-route');
-const usersRoute =  require('./routes/users-route');
+const productRoute = require("./routes/productsRoute");
+const usersRoute = require("./routes/usersRoute");
 
 mongoose
     .connect(
@@ -32,9 +31,9 @@ app.use((req, res, next) => {
     next();
 });
 
-
-app.use("/api/products", productRoute);
-app.use("/api/users", usersRoute);
-
-
-
+app.use("/api/product", productRoute);
+app.use("/api/user", usersRoute);
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+});
