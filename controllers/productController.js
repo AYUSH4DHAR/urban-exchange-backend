@@ -1,9 +1,10 @@
 const { ObjectId } = require("mongodb");
 const Product = require("../models/Product");
 const express = require("express");
+const checkAuth = require("../middleware/check-auth");
 const productsRouter = express.Router();
 
-productsRouter.post("/", async (req, res, next) => {
+productsRouter.post("/",checkAuth, async (req, res, next) => {
     const post = new Product({
         name: req.body.name,
         price: req.body.price,
@@ -29,7 +30,7 @@ productsRouter.get("/", (req, res, next) => {
         });
     });
 });
-productsRouter.delete(":id", (req, res, next) => {
+productsRouter.delete(":id", checkAuth , (req, res, next) => {
     Product.deleteOne({ _id: req.params.id }).then((result) => {
         console.log(result);
         res.status(200).json({ message: "Products deleted!" });
