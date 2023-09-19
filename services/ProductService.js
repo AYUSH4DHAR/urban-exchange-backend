@@ -13,7 +13,7 @@ const createProduct = async (req, res, next) => {
     });
     await product.save().then((createdProduct) => {
         res.status(201).json({
-            message: "Post added successfully",
+            message: "Product added successfully",
             postId: createdProduct._id,
         });
     });
@@ -21,7 +21,7 @@ const createProduct = async (req, res, next) => {
 const getAllProducts = async (req, res, next) => {
     Product.find().then((products) => {
         res.status(200).json({
-            message: "Posts fetched successfully!",
+            message: "Products fetched successfully!",
             Products: products,
         });
     });
