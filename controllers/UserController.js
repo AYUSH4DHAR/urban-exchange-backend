@@ -1,6 +1,7 @@
 const express = require("express");
 const userRouter = express.Router();
 const userService = require('../services/UserService');
+const passport = require('passport');
 
 userRouter.post("/", async (req, res, next) => {
   await userService.signUp(req, res, next);
@@ -14,6 +15,22 @@ userRouter.delete("/:id", async (req, res, next) => {
 userRouter.post("/login", async (req, res, next) => {
   await userService.logIn(req, res, next);
 });
+
+userRouter.post("/googleAuth", async (req, res, next) => {
+  await userService.googleAuth(req, res, next);
+});
+
+
+userRouter.get('/google/login', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'] }))
+
+userRouter.get('auth/google/callback', passport.authenticate('google', { failureRedirect: '/err' }), (req, res) => {
+  req.login(req.session.passport.user,function(err){
+    console.log(req.session.passport.user);
+    if(err){ return res.status(501).json(err);}
+    return res.status(200).json({message:'Login Successful'});
+
+  });
+})
 
 
 module.exports = userRouter;
