@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const Product = require('../models/Product')
+const Product = require('../models/Product');
 const createProduct = async (req, res, next) => {
     const product = new Product({
         name: req.body.name,
@@ -11,6 +11,7 @@ const createProduct = async (req, res, next) => {
         seller: req.body.seller ? req.body.seller : new ObjectId(),
         boughtBy: req.body.boughtBy ? req.body.boughtBy : new ObjectId(),
     });
+    // add imageList -> a list of names of images / urls for fetching from image-service
     await product.save().then((createdProduct) => {
         res.status(201).json({
             message: "Product added successfully",

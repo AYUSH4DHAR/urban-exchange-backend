@@ -5,6 +5,7 @@ const app = express();
 
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
+const imageRoute = require("./routes/imagesRoute");
 
 mongoose
     .connect(
@@ -36,6 +37,8 @@ app.use((req, res, next) => {
 
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
+app.use("/api/image", imageRoute);
+
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
