@@ -8,6 +8,7 @@ var session = require ('express-session')
 // require('./services/passport-config')
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
+const imageRoute = require("./routes/imagesRoute");
 
 mongoose
     .connect(
@@ -52,6 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
+app.use("/api/image", imageRoute);
+
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
