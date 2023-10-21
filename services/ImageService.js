@@ -5,7 +5,8 @@ const fileStorageEngine = multer.diskStorage({
         cb(null, `${process.cwd()}/images`);
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '---' + Date.now() + path.extname(file.originalname));
+        // name --- uniqueId --- productId
+        cb(null, file.fieldname + '---' + Date.now() + '---' + req.body.tag + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: fileStorageEngine });
