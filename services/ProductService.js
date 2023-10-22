@@ -58,7 +58,7 @@ const getAllProducts = async (req, res, next) => {
 const deleteProductById = async (req, res, next) => {
     Product.findOneAndDelete({ _id: req.params.id }).then((result) => {
         let productImages = result.productImages;
-        fs.readdir(`${process.cwd()}/images`, async (err, files) => {
+        fs.readdir(`${process.cwd()}/images/product`, async (err, files) => {
             if (err) {
                 console.error(err);
             } else {

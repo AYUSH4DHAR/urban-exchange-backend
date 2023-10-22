@@ -3,7 +3,12 @@ const imageRouter = express.Router();
 const imageService = require('../services/ImageService');
 const fs = require('fs');
 const path = require('path');
-
+imageRouter.post("/user", imageService.upload.single('avatar'), (req, res, next) => {
+    res.json({
+        status: "success",
+        message: "user image uploaded successfully"
+    });
+})
 imageRouter.post("/single", imageService.upload.single('image'), (req, res, next) => {
     res.json({
         status: "success",
