@@ -10,6 +10,12 @@ imageRouter.post("/single", imageService.upload.single('image'), (req, res, next
         message: "image uploaded successfully"
     });
 })
+imageRouter.post("/multiple", imageService.upload.array('images', 10), (req, res, next) => {
+    res.json({
+        status: "success",
+        message: "product images uploaded successfully"
+    })
+})
 imageRouter.get("/", (req, res, next) => {
     const imageName = req.body.imageName;
     fs.readdir(`${process.cwd()}/images`, async (err, files) => {
