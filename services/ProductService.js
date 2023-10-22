@@ -55,6 +55,14 @@ const getAllProducts = async (req, res, next) => {
         });
     });
 }
+const getProductById = async (req, res, next) => {
+    Product.findOne({ _id: req.params.id }).then((product) => {
+        res.status(200).json({
+            message: "Product fetched successfully",
+            data: product
+        })
+    })
+}
 const deleteProductById = async (req, res, next) => {
     Product.findOneAndDelete({ _id: req.params.id }).then((result) => {
         let productImages = result.productImages;
@@ -84,6 +92,7 @@ const deleteProductById = async (req, res, next) => {
 module.exports = {
     createProduct,
     getAllProducts,
+    getProductById,
     deleteProductById,
     createProductTag
 }
