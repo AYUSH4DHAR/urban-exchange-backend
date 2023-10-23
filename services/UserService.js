@@ -28,8 +28,6 @@ const signUp = async (req, res, next) => {
 
 const googleAuth = async (req, res, next) => {
     const tokenId = req.body.token; // Assuming you send the Google ID token from the client
-
-    console.log(req.body, "tokneId")
     try {
         const ticket = await client.verifyIdToken({
             idToken: tokenId,
@@ -137,7 +135,6 @@ const getAllUsers = async (req, res, next) => {
 }
 const deleteUserById = async (req, res, next) => {
     Users.deleteOne({ _id: req.params.id }).then(result => {
-        console.log(result);
         res.status(200).json({ message: "user deleted!" });
     }, (error) => {
         console.error(error);

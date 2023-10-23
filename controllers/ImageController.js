@@ -24,7 +24,11 @@ imageRouter.post("/multiple", imageService.upload.array('images', 10), (req, res
 })
 imageRouter.get("/:name", (req, res, next) => {
     const imageName = req.params.name;
-    fs.readdir(`${process.cwd()}/images`, async (err, files) => {
+    let directory = `${process.cwd()}/images`;
+    let imageDir = imageName.split('---')[0];
+    if (imageDir == 'images') directory += '/product';
+    else if (imageDir == 'avatar') directory += '/user';
+    fs.readdir(directory, async (err, files) => {
         if (err) {
             console.error(err);
         } else {
@@ -33,7 +37,7 @@ imageRouter.get("/:name", (req, res, next) => {
                 let fileName = path.basename(file, path.extname(file));
                 if (imageName.includes(fileName)) {
                     fileFound = true;
-                    res.sendFile(`${process.cwd()}/images/${imageName}`);
+                    res.sendFile(`${directory}/${imageName}`);
                     return;
                 }
             })

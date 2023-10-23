@@ -6,7 +6,7 @@ const Product = require('../models/Product');
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
-    fs.readdir(`${process.cwd()}/images`, async (err, files) => {
+    fs.readdir(`${process.cwd()}/images/product`, async (err, files) => {
         if (err) {
             console.error(err);
         } else {
@@ -56,7 +56,7 @@ const getAllProducts = async (req, res, next) => {
     });
 }
 const getProductById = async (req, res, next) => {
-    Product.findOne({ _id: req.params.id }).then((err, product) => {
+    Product.findOne({ _id: req.params.id }).then((product) => {
         res.status(200).json({
             message: "Product fetched successfully",
             data: product
