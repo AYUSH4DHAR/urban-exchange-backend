@@ -56,10 +56,16 @@ const getAllProducts = async (req, res, next) => {
     });
 }
 const getProductById = async (req, res, next) => {
-    Product.findOne({ _id: req.params.id }).then((product) => {
+    Product.findOne({ _id: req.params.id }).then((err, product) => {
         res.status(200).json({
             message: "Product fetched successfully",
             data: product
+        })
+    }, (error) => {
+        console.error(error);
+        res.status(404).json({
+            message: "Product Not Found",
+            data: null
         })
     })
 }
@@ -87,6 +93,12 @@ const deleteProductById = async (req, res, next) => {
             }
         });
         res.status(200).json({ message: "Products deleted!" });
+    }, (error) => {
+        console.error(error);
+        res.status(404).json({
+            message: "Product Not Found",
+            data: null
+        })
     });
 }
 module.exports = {
