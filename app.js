@@ -3,8 +3,8 @@ const bodyParser = require("body-parser");
 var path = require('path');
 const mongoose = require("mongoose");
 const app = express();
-var passport=require('passport')
-var session = require ('express-session')
+var passport = require('passport')
+var session = require('express-session')
 // require('./services/passport-config')
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
@@ -40,13 +40,13 @@ app.use((req, res, next) => {
 
 app.use(
     session({
-      secret: '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', // Replace with a secure secret
-      resave: true,
-      saveUninitialized: true,
+        secret: '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', // Replace with a secure secret
+        resave: true,
+        saveUninitialized: true,
     })
-  );
-  
-  // Initialize Passport.js
+);
+
+// Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -54,7 +54,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
 app.use("/api/image", imageRoute);
-
+app.get("*", (req, res, next) => {
+    res.status(404).json({
+        status: "Failure",
+        message: "API Not Found"
+    })
+})
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);

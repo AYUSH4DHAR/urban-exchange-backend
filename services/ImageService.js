@@ -1,11 +1,18 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const fileStorageEngine = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, `${process.cwd()}/images`);
+        let curPath = `${process.cwd()}/images`;
+        if (file.fieldname == 'images') curPath += '/product';
+        else if (file.fieldname == 'avatar') curPath += '/user';
+        else curPath += '/single';
+        fs.mkdirSync(curPath, { recursive: true });
+        cb(null, curPath);
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '---' + Date.now() + path.extname(file.originalname));
+        // name --- uniqueId --- productId
+        cb(null, file.fieldname + '---' + Date.now() + '---' + req.body.tag + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: fileStorageEngine });

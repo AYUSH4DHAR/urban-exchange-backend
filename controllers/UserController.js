@@ -24,10 +24,9 @@ userRouter.post("/googleAuth", async (req, res, next) => {
 userRouter.get('/google/login', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'] }))
 
 userRouter.get('auth/google/callback', passport.authenticate('google', { failureRedirect: '/err' }), (req, res) => {
-  req.login(req.session.passport.user,function(err){
-    console.log(req.session.passport.user);
-    if(err){ return res.status(501).json(err);}
-    return res.status(200).json({message:'Login Successful'});
+  req.login(req.session.passport.user, function (err) {
+    if (err) { return res.status(501).json(err); }
+    return res.status(200).json({ message: 'Login Successful' });
 
   });
 })

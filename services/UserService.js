@@ -27,15 +27,13 @@ const signUp = async (req, res, next) => {
 }
 
 const googleAuth = async (req, res, next) => {
-    const  tokenId  = req.body.token; // Assuming you send the Google ID token from the client
-    
-    console.log(req.body,"tokneId")
+    const tokenId = req.body.token; // Assuming you send the Google ID token from the client
     try {
         const ticket = await client.verifyIdToken({
             idToken: tokenId,
             audience: '1074394604196-610lm57lcj94ovdii34lfib07mcolbqj.apps.googleusercontent.com', // Verify that the token was issued to your client
         });
-        
+
         const payload = ticket.getPayload();
         const email = payload.email;
 
@@ -137,8 +135,13 @@ const getAllUsers = async (req, res, next) => {
 }
 const deleteUserById = async (req, res, next) => {
     Users.deleteOne({ _id: req.params.id }).then(result => {
-        console.log(result);
         res.status(200).json({ message: "user deleted!" });
+    }, (error) => {
+        console.error(error);
+        res.status(404).json({
+            message: "User Not Found",
+            data: null
+        })
     });
 }
-module.exports = { signUp, logIn, getAllUsers, deleteUserById , googleAuth }
+module.exports = { signUp, logIn, getAllUsers, deleteUserById, googleAuth }

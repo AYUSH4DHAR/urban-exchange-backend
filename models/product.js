@@ -31,6 +31,13 @@ const productSchema = mongoose.Schema({
     boughtBy: {
         type: ObjectId,
     },
+    tag: {
+        type: String,
+    },
+    productImages: {
+        type: Array
+    }
+
 });
 
 module.exports = mongoose.model("Product", productSchema);
