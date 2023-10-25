@@ -101,10 +101,68 @@ const deleteProductById = async (req, res, next) => {
         })
     });
 }
+const getCreateProductFields = async (req, res, next) => {
+    let createProductFields = [
+        {
+            label: 'name',
+            fieldName: 'Product Name',
+            type: 'text',
+            required: true,
+            multiple: false,
+        },
+        {
+            label: 'price',
+            fieldName: 'Price',
+            type: 'number',
+            required: true,
+            multiple: false,
+        },
+        {
+            label: 'description',
+            fieldName: 'Description',
+            type: 'textarea',
+            required: true,
+            multiple: false,
+        },
+        {
+            label: 'note',
+            fieldName: 'Note',
+            type: 'textarea',
+            required: false,
+            multiple: false,
+        },
+        {
+            label: 'modelNo',
+            fieldName: 'Model No',
+            type: 'text',
+            required: true,
+            multiple: false,
+        },
+        {
+            label: 'category',
+            fieldName: 'Category',
+            type: 'text',
+            required: true,
+            multiple: false,
+        },
+        {
+            label: 'images',
+            fieldName: 'Images',
+            type: 'file',
+            required: true,
+            multiple: true,
+        },
+    ];
+    res.status(200).json({
+        message: "Fetched create product fields",
+        data: createProductFields
+    })
+}
 module.exports = {
     createProduct,
     getAllProducts,
     getProductById,
     deleteProductById,
-    createProductTag
+    createProductTag,
+    getCreateProductFields,
 }
