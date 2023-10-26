@@ -2,8 +2,10 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   try {
-    const token = req.headers.authorization.substring(7);
-    // token comes as 'Bearer ...' from UI
+    let token = req.headers.authorization;
+    if (token.substring(0, 7) === 'Bearer ') {
+      token = token.substring(7);
+    }
     jwt.verify(token, "secret_this_should_be_longer");
     next();
   } catch (error) {

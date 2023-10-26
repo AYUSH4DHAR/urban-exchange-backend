@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const Product = require('../models/Product');
+const UserService = require('../services/UserService');
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
@@ -33,10 +34,24 @@ const persistProduct = async (req, res, next) => {
         tag: req.body.tag,
         productImages: req.body.productImages
     });
-    await product.save().then((createdProduct) => {
-        res.status(201).json({
-            message: "Product added successfully",
-            productId: createdProduct._id,
+    await product.save().then(async (createdProduct) => {
+        await UserService.addToUserProductsPersist(req.body.seller, createdProduct._id).then(result => {
+            res.status(201).json({
+                message: "Product added successfully, User products updated",
+                productId: createdProduct._id,
+            });
+        }, (error) => {
+            console.error(error);
+            res.status(404).json({
+                message: "User Not Found",
+                data: null
+            })
+        });
+    }, (error) => {
+        console.error(error);
+        res.status(503).json({
+            message: "Product Creation Failure",
+            data: null
         });
     });
 }
