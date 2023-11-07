@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Product = require('../models/Product');
 const UserService = require('../services/UserService');
+const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
@@ -116,6 +117,13 @@ const deleteProductById = async (req, res, next) => {
         })
     });
 }
+const getProductCategories = async (req, res, next) => {
+    res.status(200).json({
+        message: "Fetched product categories",
+        data: PRODUCT_CATEGORIES
+    })
+}
+
 const getCreateProductFields = async (req, res, next) => {
     let createProductFields = [
         {
@@ -156,9 +164,10 @@ const getCreateProductFields = async (req, res, next) => {
         {
             label: 'category',
             fieldName: 'Category',
-            type: 'text',
+            type: 'select',
             required: true,
             multiple: false,
+            options: PRODUCT_CATEGORIES,
         },
         {
             label: 'images',
@@ -180,4 +189,5 @@ module.exports = {
     deleteProductById,
     createProductTag,
     getCreateProductFields,
+    getProductCategories,
 }
