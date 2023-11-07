@@ -152,7 +152,7 @@ const deleteUserById = async (req, res, next) => {
 const addToUserProducts = async (req, res, next) => {
     const _id = req.body._id;
     const productId = req.body.productId;
-    User.findOneAndUpdate({ _id: _id }, { $push: { 'productsListed': productId } }).then(result => {
+    addToUserProductsPersist(_id, productId).then(result => {
         res.status(200).json({ status: "success", message: "added products to user listed products" });
     }, (error) => {
         console.error(error);
@@ -162,4 +162,7 @@ const addToUserProducts = async (req, res, next) => {
         })
     })
 }
-module.exports = { signUp, logIn, getAllUsers, deleteUserById, googleAuth, addToUserProducts }
+const addToUserProductsPersist = async (_id, productId) => {
+    return User.findOneAndUpdate({ _id: _id }, { $push: { 'productsListed': productId } });
+}
+module.exports = { signUp, logIn, getAllUsers, deleteUserById, googleAuth, addToUserProducts, addToUserProductsPersist }

@@ -3,6 +3,8 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const Product = require('../models/Product');
+const UserService = require('../services/UserService');
+const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
@@ -33,10 +35,24 @@ const persistProduct = async (req, res, next) => {
         tag: req.body.tag,
         productImages: req.body.productImages
     });
-    await product.save().then((createdProduct) => {
-        res.status(201).json({
-            message: "Product added successfully",
-            productId: createdProduct._id,
+    await product.save().then(async (createdProduct) => {
+        await UserService.addToUserProductsPersist(req.body.seller, createdProduct._id).then(result => {
+            res.status(201).json({
+                message: "Product added successfully, User products updated",
+                productId: createdProduct._id,
+            });
+        }, (error) => {
+            console.error(error);
+            res.status(404).json({
+                message: "User Not Found",
+                data: null
+            })
+        });
+    }, (error) => {
+        console.error(error);
+        res.status(503).json({
+            message: "Product Creation Failure",
+            data: null
         });
     });
 }
@@ -101,6 +117,13 @@ const deleteProductById = async (req, res, next) => {
         })
     });
 }
+const getProductCategories = async (req, res, next) => {
+    res.status(200).json({
+        message: "Fetched product categories",
+        data: PRODUCT_CATEGORIES
+    })
+}
+
 const getCreateProductFields = async (req, res, next) => {
     let createProductFields = [
         {
@@ -141,9 +164,10 @@ const getCreateProductFields = async (req, res, next) => {
         {
             label: 'category',
             fieldName: 'Category',
-            type: 'text',
+            type: 'select',
             required: true,
             multiple: false,
+            options: PRODUCT_CATEGORIES,
         },
         {
             label: 'images',
@@ -165,4 +189,5 @@ module.exports = {
     deleteProductById,
     createProductTag,
     getCreateProductFields,
+    getProductCategories,
 }
