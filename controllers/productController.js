@@ -8,7 +8,7 @@ productsRouter.post("/", checkAuth, async (req, res, next) => {
     await productService.createProduct(req, res, next);
 });
 productsRouter.get("/", async (req, res, next) => {
-    await productService.getAllProducts(req, res, next);
+    await productService.getProductsByPageNoAndPageSizeAndOrCategory(req, res, next);
 });
 productsRouter.get("/tag", async (req, res, next) => {
     await productService.createProductTag(req, res, next);
