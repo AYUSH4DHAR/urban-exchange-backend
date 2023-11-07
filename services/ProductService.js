@@ -123,7 +123,6 @@ const getProductCategories = async (req, res, next) => {
         data: PRODUCT_CATEGORIES
     })
 }
-
 const getCreateProductFields = async (req, res, next) => {
     let createProductFields = [
         {
@@ -182,6 +181,38 @@ const getCreateProductFields = async (req, res, next) => {
         data: createProductFields
     })
 }
+const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
+    // assign default page number and page size
+    if (!req.query.page || !req.query.limit || req.query.limit && Number(req.query.limit) == 0) {
+        req.query.page = req.query.page ? req.query.page : 0;
+        req.query.limit = req.query.limit ? req.query.limit : 25;
+    }
+    let page = Number(req.query.page);
+    let limit = Number(req.query.limit);
+    const category = req.query.category;
+    let data = await Product.aggregate([
+        {
+            "$facet": {
+                "products": [
+                    { "$match": { category: category ? category : /./ } },
+                    { "$skip": page },
+                    { "$limit": limit }
+                ],
+                "totalProducts": [
+                    { "$count": "count" }
+                ],
+            }
+        }
+    ]);
+    res.json({
+        message: "successfully fetched products",
+        data: data,
+        page: page,
+        limit: limit
+    });
+
+}
+
 module.exports = {
     createProduct,
     getAllProducts,
@@ -190,4 +221,5 @@ module.exports = {
     createProductTag,
     getCreateProductFields,
     getProductCategories,
+    getProductsByPageNoAndPageSizeAndOrCategory,
 }
