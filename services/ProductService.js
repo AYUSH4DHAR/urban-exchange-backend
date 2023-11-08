@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
-const Product = require('../models/Product');
+const Product = require('../models/product');
 const UserService = require('../services/UserService');
 const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
 const createProduct = async (req, res, next) => {
@@ -31,7 +31,7 @@ const persistProduct = async (req, res, next) => {
         modelNo: req.body.modelNo ? req.body.modelNo : "",
         category: req.body.category ? req.body.category : "",
         seller: req.body.seller ? req.body.seller : new ObjectId(),
-        boughtBy: req.body.boughtBy ? req.body.boughtBy : new ObjectId(),
+        boughtBy: req.body.boughtBy ? req.body.boughtBy : null,
         tag: req.body.tag,
         productImages: req.body.productImages
     });
@@ -189,7 +189,7 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     }
     let page = Number(req.query.page);
     let limit = Number(req.query.limit);
-    const category = req.query.category;
+    let category = req.query.category;
     let data = await Product.aggregate([
         {
             "$facet": {

@@ -9,6 +9,9 @@ userRouter.post("/", async (req, res, next) => {
 userRouter.get("/", async (req, res, next) => {
   await userService.getAllUsers(req, res, next);
 });
+userRouter.get("/:id", async (req, res, next) => {
+  await userService.getUserById(req, res, next);
+});
 userRouter.delete("/:id", async (req, res, next) => {
   await userService.deleteUserById(req, res, next);
 });
