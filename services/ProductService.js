@@ -196,7 +196,7 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
         {
             "$facet": {
                 "products": [
-                    { "$skip": page },
+                    { "$skip": page * limit },
                     { "$limit": limit }
                 ],
                 "totalProducts": [
