@@ -191,12 +191,19 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     let page = Number(req.query.page);
     let limit = Number(req.query.limit);
     let category = req.query.category;
+    let categoryExists = false;
+    if (!category) {
+        category = /./;
+    } else {
+        category = String(category).split(',');
+        categoryExists = true;
+    }
     let data = await Product.aggregate([
-        { "$match": { category: category ? category : /./ } },
+        { "$match": { category: categoryExists ? { "$in": category } : category } },
         {
             "$facet": {
                 "products": [
-                    { "$skip": page },
+                    { "$skip": page * limit },
                     { "$limit": limit }
                 ],
                 "totalProducts": [
