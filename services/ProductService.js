@@ -183,6 +183,7 @@ const getCreateProductFields = async (req, res, next) => {
 }
 const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     // assign default page number and page size
+    // require total length for pagination
     if (!req.query.page || !req.query.limit || req.query.limit && Number(req.query.limit) == 0) {
         req.query.page = req.query.page ? req.query.page : 0;
         req.query.limit = req.query.limit ? req.query.limit : 25;
@@ -191,10 +192,10 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     let limit = Number(req.query.limit);
     let category = req.query.category;
     let data = await Product.aggregate([
+        { "$match": { category: category ? category : /./ } },
         {
             "$facet": {
                 "products": [
-                    { "$match": { category: category ? category : /./ } },
                     { "$skip": page },
                     { "$limit": limit }
                 ],
