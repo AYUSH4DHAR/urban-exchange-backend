@@ -9,12 +9,10 @@ var session = require('express-session')
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
 const imageRoute = require("./routes/imagesRoute");
+require('dotenv').config();
 
 mongoose
-    .connect(
-        // "mongodb+srv://aysid:aysid@cluster0.n8ceegw.mongodb.net/?retryWrites=true&w=majority"
-        "mongodb+srv://uex:uex@urbanexchange.54fzlvg.mongodb.net/?retryWrites=true&w=majority"
-    )
+    .connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Connected to database!");
     })
