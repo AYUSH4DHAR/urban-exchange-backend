@@ -12,7 +12,8 @@ const imageRoute = require("./routes/imagesRoute");
 
 mongoose
     .connect(
-        "mongodb+srv://aysid:aysid@cluster0.n8ceegw.mongodb.net/?retryWrites=true&w=majority"
+        // "mongodb+srv://aysid:aysid@cluster0.n8ceegw.mongodb.net/?retryWrites=true&w=majority"
+        "mongodb+srv://uex:uex@urbanexchange.54fzlvg.mongodb.net/?retryWrites=true&w=majority"
     )
     .then(() => {
         console.log("Connected to database!");
@@ -20,6 +21,7 @@ mongoose
     .catch(() => {
         console.log("Connection failed!");
     });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((req, res, next) => {

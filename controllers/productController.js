@@ -19,6 +19,12 @@ productsRouter.get("/create-product-fields", async (req, res, next) => {
 productsRouter.get("/product-categories", async (req, res, next) => {
     await productService.getProductCategories(req, res, next);
 })
+productsRouter.post("/product-list-by-id", async (req, res, next) => {
+    await productService.getProductsByIdList(req, res, next);
+})
+productsRouter.get("/search/:searchItem", async (req, res, next) => {
+    await productService.search(req, res, next);
+})
 productsRouter.get("/:id", async (req, res, next) => {
     await productService.getProductById(req, res, next);
 });
