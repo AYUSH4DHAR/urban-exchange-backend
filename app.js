@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 
 app.use(
     session({
-        secret: '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', // Replace with a secure secret
+        secret: process.env.SESSION_KEY, // Replace with a secure secret
         resave: true,
         saveUninitialized: true,
     })
