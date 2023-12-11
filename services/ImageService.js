@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Image = require('../models/Image');
 require('dotenv').config();
+const crypto = require('crypto');
 cloudinary.config({
     cloud_name: process.env.CLOUDNAME,
     api_key: process.env.CLOUDAPIKEY,
@@ -21,7 +22,7 @@ const fileStorageEngine = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         // name --- uniqueId --- productId
-        cb(null, file.fieldname + '---' + Date.now() + '---' + req.body.tag + path.extname(file.originalname));
+        cb(null, file.fieldname + '---' + crypto.randomBytes(16).toString("hex") + '---' + req.body.tag + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: fileStorageEngine });
