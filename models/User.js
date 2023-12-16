@@ -11,6 +11,8 @@ const userSchema = mongoose.Schema({
   username: { type: String, required: false },
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
+  description: { type: String, required: false },
+  
   avatar: { type: String, required: false },
   productsListed: { type: Array },
   productsPurchased: { type: Array },

@@ -25,6 +25,14 @@ userRouter.post("/googleAuth", async (req, res, next) => {
 userRouter.post('/add-product', async (req, res, next) => {
   await userService.addToUserProducts(req, res, next);
 })
+userRouter.post('/getUserDetails', async (req, res, next) => {
+  await userService.getUserData(req, res, next);
+})
+
+userRouter.post('/setUserDetails', async (req, res, next) => {
+  await userService.setUserData(req, res, next);
+})
+
 userRouter.get('/google/login', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'] }))
 
 userRouter.get('auth/google/callback', passport.authenticate('google', { failureRedirect: '/err' }), (req, res) => {
