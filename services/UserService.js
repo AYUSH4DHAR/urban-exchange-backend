@@ -201,6 +201,49 @@ const addToUserProductsPersist = async (_id, productId) => {
         { $push: { productsListed: productId } }
     );
 };
+
+// This function is used to add the user's wishlist to the user db
+const addToUserWishlist = async (req, res, next) => {
+    const _id = req.body._id;
+    let setQuery = {"wishlist": req.body.wishlist};
+    const query = { $set: setQuery};
+    const options = { runValidators: true, new: true };
+    User.findOneAndUpdate({ "_id": _id }, query, options).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                message: "added products to user listed products",
+            });
+        },
+        (error) => {
+            console.error(error);
+            res.status(404).json({
+                message: "User Not Found",
+                data: null,
+            });
+        }
+    );
+};
+
+// This function is used to get the user's wishlist to the user db
+const getUserWishlist = async (req, res, next) => {
+    const _id = req.params._id;
+    User.find({ "_id": _id }).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: result.wishlist? result.wishlist : [],
+            });
+        },
+        (error) => {
+            console.error(error);
+            res.status(404).json({
+                message: "User Not Found",
+                data: [],
+            });
+        }
+    );
+};
 module.exports = {
     signUp,
     logIn,
@@ -210,4 +253,6 @@ module.exports = {
     addToUserProducts,
     addToUserProductsPersist,
     getUserById,
+    addToUserWishlist,
+    getUserWishlist,
 };
