@@ -9,8 +9,12 @@ const client = new OAuth2Client(CLIENT_ID);
 const signUp = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then((hash) => {
         const user = new User({
-            email: req.body.email,
-            password: hash,
+          email: req.body.email,
+          password: hash,// Assuming 'username' is a field in your form
+          firstName: req.body.firstName, // Assuming 'firstName' is a field in your form
+          lastName: req.body.lastName,   // Assuming 'lastName' is a field in your form
+          phone: req.body.phone 
+            
         });
         user
             .save()
