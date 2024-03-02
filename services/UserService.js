@@ -20,7 +20,7 @@ const signUp = async (req, res, next) => {
                 });
             })
             .catch((err) => {
-                res.status(500).json({
+                res.status(409).json({
                     error: err,
                 });
             });
@@ -205,8 +205,8 @@ const addToUserProductsPersist = async (_id, productId) => {
 // This function is used to add the user's wishlist to the user db
 const addToUserWishlist = async (req, res, next) => {
     const _id = req.body._id;
-    let setQuery = {"wishlist": req.body.wishlist};
-    const query = { $set: setQuery};
+    let setQuery = { "wishlist": req.body.wishlist };
+    const query = { $set: setQuery };
     const options = { runValidators: true, new: true };
     User.findOneAndUpdate({ "_id": _id }, query, options).then(
         (result) => {
@@ -232,7 +232,7 @@ const getUserWishlist = async (req, res, next) => {
         (result) => {
             res.status(200).json({
                 status: "success",
-                data: result.wishlist? result.wishlist : [],
+                data: result.wishlist ? result.wishlist : [],
             });
         },
         (error) => {
