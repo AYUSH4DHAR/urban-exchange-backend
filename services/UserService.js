@@ -229,7 +229,7 @@ const setUserData = async (req, res) => {
         userData.username = req.body.username;
         userData.avatar = req.body.avatar;
         userData.description = req.body.description;
-        userData.Phone = userData.Phone.concat(req.body.Phone);
+        userData.Phone = [...new Set(userData.Phone.concat(req.body.Phone))];
 
         //save the updated user data in db
         let updatedUserData = await userData.save();
