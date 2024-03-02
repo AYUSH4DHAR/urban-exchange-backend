@@ -34,7 +34,6 @@ userRouter.post('/setUserDetails', async (req, res, next) => {
   await userService.setUserData(req, res, next);
 })
 
-});
 userRouter.post('/add-wishlist', async (req, res, next) => {
   await userService.addToUserWishlist(req, res, next);
 });
