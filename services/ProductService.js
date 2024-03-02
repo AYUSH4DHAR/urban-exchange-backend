@@ -220,7 +220,93 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     });
 
 }
+const search = async (req, res, next) => {
+    let searchItem = req.params.searchItem;
+    if (searchItem) searchItem = searchItem.trim();
+    let projections = {
+        "name": 1, "category": 1
+    }
+    try {
+        let autoComplete = await Product.aggregate([
+            {
+                "$search": {
+                    "index": "searchProducts",
+                    "autocomplete": {
+                        "query": `${searchItem}`,
+                        "path": "name",
+                        "fuzzy": {
+                            "maxEdits": 2,
+                            "prefixLength": 3
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    ...projections,
+                    score: { $meta: 'searchScore' },
+                }
+            }
+        ]).sort({ score: -1 }).limit(5);
+        let searchResults = await Product.aggregate([
+            {
+                "$search": {
+                    "index": "searchProductsTxt",
+                    "text": {
+                        "query": `${searchItem}`,
+                        "path": {
+                            "wildcard": "*"
+                        },
+                        "fuzzy": {
+                            "maxEdits": 2,
+                            "prefixLength": 3
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    ...projections,
+                    score: { $meta: 'searchScore' },
+                }
+            }
 
+        ]).sort({ score: -1 }).limit(5);
+        autoComplete.forEach(res => {
+            if (!searchResults.find(r => {
+                return r._id.toString() == res._id.toString();
+            })) searchResults.push(res);
+        })
+        // sort in descending order of scores
+        searchResults = searchResults.sort((a, b) => b.score - a.score);
+        res.send({
+            message: "Success",
+            data: searchResults
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({
+            message: "Product Not Found",
+            data: null
+        })
+    }
+}
+const getProductsByIdList = async (req, res, next) => {
+    const idList = req.body.idList;
+    try {
+        let products = await Product.find({ _id: { "$in": idList } });
+        res.status(200).json({
+            message: "Product list by ids fetched successfully",
+            data: products
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(404).json({
+            message: "Product Not Found",
+            data: null
+        })
+    }
+}
 module.exports = {
     createProduct,
     getAllProducts,
@@ -230,4 +316,6 @@ module.exports = {
     getCreateProductFields,
     getProductCategories,
     getProductsByPageNoAndPageSizeAndOrCategory,
+    search,
+    getProductsByIdList,
 }

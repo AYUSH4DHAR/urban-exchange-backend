@@ -2,7 +2,7 @@ const passport = require('passport'),
     LocalStratergy = require('passport-local').Strategy;
 const User = require('./../models/User')
 require('dotenv').config();
-
+const environment = process.env.NODE_ENV || 'development';
 passport.use('local', new LocalStratergy({
     usernameField: 'email',
     passwordField: 'password'
@@ -26,7 +26,7 @@ var GoogleStrategy = require('passport-google-oauth2').Strategy;
 passport.use('google', new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'http://localhost:5000/auth/google/callback'
+    callbackURL: environment == 'development' ? 'http://localhost:5000/auth/google/callback' : 'https://urban-exchange-backend.onrender.com/auth/google/callback'
 },
     function (token, tokenSecret, profile, done) {
         //check user table for anyone with a google ID of profile.id

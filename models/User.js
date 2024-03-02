@@ -17,6 +17,7 @@ const userSchema = mongoose.Schema({
   productsListed: { type: Array },
   productsPurchased: { type: Array },
   Phone: { type: Array },
+  wishlist: { type: Array },
 });
 
 userSchema.plugin(uniqueValidator);

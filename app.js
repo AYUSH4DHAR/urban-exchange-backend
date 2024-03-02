@@ -9,17 +9,17 @@ var session = require('express-session')
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
 const imageRoute = require("./routes/imagesRoute");
+require('dotenv').config();
 
 mongoose
-    .connect(
-        "mongodb+srv://aysid:aysid@cluster0.n8ceegw.mongodb.net/?retryWrites=true&w=majority"
-    )
+    .connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Connected to database!");
     })
     .catch(() => {
         console.log("Connection failed!");
     });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((req, res, next) => {
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 
 app.use(
     session({
-        secret: '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', // Replace with a secure secret
+        secret: process.env.SESSION_KEY, // Replace with a secure secret
         resave: true,
         saveUninitialized: true,
     })

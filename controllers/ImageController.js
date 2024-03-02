@@ -1,25 +1,52 @@
-const express = require('express'); 
+const express = require('express');
 const imageRouter = express.Router();
 const imageService = require('../services/ImageService');
 const fs = require('fs');
 const path = require('path');
+const Image = require('../models/Image');
 imageRouter.post("/user", imageService.upload.single('avatar'), (req, res, next) => {
     res.json({
         status: "success",
         message: "user image uploaded successfully"
     });
+    res.on('finish', () => {
+        imageService.cloudUploader.upload(req.file.path, { tags: 'user-avatar', folder: 'avatar', public_id: path.basename(req.file.filename, path.extname(req.file.filename)) }).then(response => {
+            imageService.saveImage(req.file.filename, response);
+        });
+    })
 })
 
-imageRouter.post("/single", imageService.upload.single('image'), (req, res, next) => {
+imageRouter.post("/single", imageService.upload.single('image'), async (req, res, next) => {
+
     res.json({
         status: "success",
-        message: "image uploaded successfully"
+        message: "image saved successfully. Uploading to cloudinary.."
     });
+    res.on('finish', () => {
+        imageService.cloudUploader.upload(req.file.path, { tags: 'single-image', folder: 'single-images', public_id: path.basename(req.file.filename, path.extname(req.file.filename)) }).then(response => {
+            imageService.saveImage(req.file.filename, response);
+        });
+    })
 })
 imageRouter.post("/multiple", imageService.upload.array('images', 10), (req, res, next) => {
     res.json({
         status: "success",
         message: "product images uploaded successfully"
+    })
+    res.on('finish', () => {
+        req.files.forEach(file => {
+            imageService.cloudUploader.upload(file.path, { tags: 'multiple-images', folder: 'product', public_id: path.basename(file.filename, path.extname(file.filename)) }).then(response => {
+                imageService.saveImage(file.filename, response);
+            });
+        })
+    })
+})
+imageRouter.get("/imageUrl/:name", async (req, res, next) => {
+    const imageName = req.params.name;
+    const imageData = await Image.findOne({ name: imageName });
+    res.json({
+        message: "Success",
+        data: imageData
     })
 })
 imageRouter.get("/:name", (req, res, next) => {
@@ -30,6 +57,7 @@ imageRouter.get("/:name", (req, res, next) => {
     else if (imageDir == 'avatar') directory += '/user';
     fs.readdir(directory, async (err, files) => {
         if (err) {
+            res.status(404).send("File Not Found");
             console.error(err);
         } else {
             let fileFound = false;
@@ -47,4 +75,5 @@ imageRouter.get("/:name", (req, res, next) => {
         }
     });
 })
+
 module.exports = imageRouter;
