@@ -5,6 +5,44 @@ const fs = require('fs');
 const Product = require('../models/product');
 const UserService = require('../services/UserService');
 const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
+const STATES_INFO = [
+    ["Andhra Pradesh", "AP"],
+    ["Arunachal Pradesh", "AR"],
+    ["Assam", "AS"],
+    ["Bihar", "BR"],
+    ["Chhattisgarh", "CG"],
+    ["Goa", "GA"],
+    ["Gujarat", "GJ"],
+    ["Haryana", "HR"],
+    ["Himachal Pradesh", "HP"],
+    ["Jammu and Kashmir", "JK"],
+    ["Jharkhand", "JH"],
+    ["Karnataka", "KA"],
+    ["Kerala", "KL"],
+    ["Madhya Pradesh", "MP"],
+    ["Maharashtra", "MH"],
+    ["Manipur", "MN"],
+    ["Meghalaya", "ML"],
+    ["Mizoram", "MZ"],
+    ["Nagaland", "NL"],
+    ["Odisha", "OD"],
+    ["Punjab", "PB"],
+    ["Rajasthan", "RJ"],
+    ["Sikkim", "SK"],
+    ["Tamil Nadu", "TN"],
+    ["Telangana", "TS"],
+    ["Tripura", "TR"],
+    ["Uttarakhand", "UK"],
+    ["Uttar Pradesh", "UP"],
+    ["West Bengal", "WB"],
+    ["Andaman and Nicobar Islands", "AN"],
+    ["Chandigarh", "CH"],
+    ["Dadra and Nagar Haveli", "DN"],
+    ["Daman and Diu", "DD"],
+    ["Delhi", "DL"],
+    ["Lakshadweep", "LD"],
+    ["Puducherry", "PY"]
+];
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
@@ -174,6 +212,21 @@ const getCreateProductFields = async (req, res, next) => {
             type: 'file',
             required: true,
             multiple: true,
+        },
+        {
+            label: 'state',
+            fieldName: 'State',
+            type: 'autocomplete',
+            required: true,
+            multiple: false,
+            options: STATES_INFO,
+        },
+        {
+            label: 'pincode',
+            fieldName: 'PIN',
+            type: 'number',
+            required: true,
+            multiple: false,
         },
     ];
     res.status(200).json({
