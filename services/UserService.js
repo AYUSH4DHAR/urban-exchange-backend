@@ -146,7 +146,7 @@ const getAllUsers = async (req, res, next) => {
     });
 };
 const getUserById = async (req, res, next) => {
-    await User.findOne({ _id: req.params.id }).then(
+    await _getUserById(req.params.id).then(
         (user) => {
             user.password = undefined;
             res.status(200).json({
@@ -163,6 +163,9 @@ const getUserById = async (req, res, next) => {
         }
     );
 };
+const _getUserById = async (id) => {
+    return await User.findOne({ _id: id });
+}
 const deleteUserById = async (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(
         (result) => {
@@ -246,15 +249,6 @@ const setUserData = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
-
-
-
-
-
-
-
-
-
 // This function is used to add the user's wishlist to the user db
 const addToUserWishlist = async (req, res, next) => {
     const _id = req.body._id;
@@ -309,6 +303,7 @@ module.exports = {
     addToUserWishlist,
     getUserWishlist,
     getUserData,
-    setUserData
+    setUserData,
+    _getUserById,
 };
 
