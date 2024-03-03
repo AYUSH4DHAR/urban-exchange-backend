@@ -53,22 +53,35 @@ const createProduct = async (req, res, next) => {
             status: 'failure',
             message: 'Invalid PIN/State information'
         })
+        return;
     } else {
         const result = pinValidationInfo.result;
         if (result.length > 0) {
-            let location = [parseFloat(result[0].longitude), parseFloat(result[0].latitude)];
-            /**
-             * for geo-spatial query
-             * always store in [long, lat] format in that order, also these values should be floats
-             * create an index in db
-             * db.products.createIndex({"address.location": "2dsphere"});
-            **/
-            req.body.location = {
-                type: "Point",
-                coordinates: location
-            };
-            req.body.locationMeta = result;
+            let i = 0;
+            while (i < result.length) {
+                if (result[i].longitude !== '' && result[i].latitude !== '') {
+                    let location = [parseFloat(result[i].longitude), parseFloat(result[i].latitude)];
+                    /**
+                     * for geo-spatial query
+                     * always store in [long, lat] format in that order, also these values should be floats
+                     * create an index in db
+                     * db.products.createIndex({"address.location": "2dsphere"});
+                    **/
+                    req.body.location = {
+                        type: "Point",
+                        coordinates: location
+                    };
+                    req.body.locationMeta = result;
+                    break;
+                }
+                i++;
+            }
         }
+    }
+    const seller = req.body.seller;
+    const sellerInfo = await UserService._getUserById(seller);
+    if (sellerInfo) {
+        req.body.sellerUname = sellerInfo.username;
     }
     fs.readdir(`${process.cwd()}/images/product`, async (err, files) => {
         if (err) {
@@ -93,9 +106,12 @@ const persistProduct = async (req, res, next) => {
         modelNo: req.body.modelNo ? req.body.modelNo : "",
         category: req.body.category ? req.body.category : "",
         seller: req.body.seller ? req.body.seller : new ObjectId(),
+        sellerUname: req.body.sellerUname ? req.body.sellerUname : '',
         boughtBy: req.body.boughtBy ? req.body.boughtBy : null,
         tag: req.body.tag,
         productImages: req.body.productImages,
+        created: new Date(),
+        lastUpdated: new Date(),
         address: {
             location: req.body.location, // for geospatial query
             state: req.body.state,
