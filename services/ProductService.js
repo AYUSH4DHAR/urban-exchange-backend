@@ -2,6 +2,7 @@ const { ObjectId } = require("mongodb");
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const Product = require('../models/product');
 const UserService = require('../services/UserService');
 const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
@@ -46,6 +47,29 @@ const STATES_INFO = [
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
+    const pinValidationInfo = await fetchAndValidatePIN(req.body.pincode, req.body.state);
+    if (pinValidationInfo.status == false) {
+        res.status(400).json({
+            status: 'failure',
+            message: 'Invalid PIN/State information'
+        })
+    } else {
+        const result = pinValidationInfo.result;
+        if (result.length > 0) {
+            let location = [parseFloat(result[0].longitude), parseFloat(result[0].latitude)];
+            /**
+             * for geo-spatial query
+             * always store in [long, lat] format in that order, also these values should be floats
+             * create an index in db
+             * db.products.createIndex({"address.location": "2dsphere"});
+            **/
+            req.body.location = {
+                type: "Point",
+                coordinates: location
+            };
+            req.body.locationMeta = result;
+        }
+    }
     fs.readdir(`${process.cwd()}/images/product`, async (err, files) => {
         if (err) {
             console.error(err);
@@ -71,7 +95,13 @@ const persistProduct = async (req, res, next) => {
         seller: req.body.seller ? req.body.seller : new ObjectId(),
         boughtBy: req.body.boughtBy ? req.body.boughtBy : null,
         tag: req.body.tag,
-        productImages: req.body.productImages
+        productImages: req.body.productImages,
+        address: {
+            location: req.body.location, // for geospatial query
+            state: req.body.state,
+            pin: req.body.pincode,
+            meta: req.body.locationMeta,
+        }
     });
     await product.save().then(async (createdProduct) => {
         await UserService.addToUserProductsPersist(req.body.seller, createdProduct._id).then(result => {
@@ -93,6 +123,22 @@ const persistProduct = async (req, res, next) => {
             data: null
         });
     });
+}
+const getPostalInfo = async (req, res, next) => {
+    const pin = req.body.pin;
+    const state = req.body.state;
+    const postalInfo = await fetchAndValidatePIN(pin, state);
+    res.status(200).json({
+        status: "success",
+        data: postalInfo
+    })
+}
+const fetchAndValidatePIN = async (pin, state) => {
+    // world postal collection
+    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-6ee88ae5-6da399ea-e54b2d1a-8dd18665e371eab8b1e`;
+    const response = await fetch(POSTAL_API);
+    const postalInfo = await response.json();
+    return postalInfo;
 }
 const createProductTag = async (req, res, next) => {
     const productTag = crypto.randomBytes(16).toString("hex");
@@ -371,4 +417,6 @@ module.exports = {
     getProductsByPageNoAndPageSizeAndOrCategory,
     search,
     getProductsByIdList,
+    getPostalInfo,
+    fetchAndValidatePIN,
 }

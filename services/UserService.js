@@ -211,7 +211,7 @@ const getUserData = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: `Internal server error : ${error}` });
     }
 }
 
