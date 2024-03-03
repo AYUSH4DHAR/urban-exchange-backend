@@ -19,6 +19,9 @@ productsRouter.get("/create-product-fields", async (req, res, next) => {
 productsRouter.get("/product-categories", async (req, res, next) => {
     await productService.getProductCategories(req, res, next);
 })
+productsRouter.get("/postal-info", async (req, res, next) => {
+    await productService.getPostalInfo(req, res, next);
+})
 productsRouter.post("/product-list-by-id", async (req, res, next) => {
     await productService.getProductsByIdList(req, res, next);
 })
