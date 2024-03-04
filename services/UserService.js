@@ -48,8 +48,7 @@ const googleAuth = async (req, res, next) => {
         }
 
         // Check if the email already exists in your database
-        const existingUser = await User.find({ email: req.body.email });
-
+        const existingUser = await User.findOne({ email: req.body.email });
         if (existingUser) {
             // User already exists, generate a token and send it
             const token = jwt.sign(
@@ -67,7 +66,7 @@ const googleAuth = async (req, res, next) => {
             // User doesn't exist, create a new user
             bcrypt.hash("defaultPassword", 10).then((hash) => {
                 const newUser = new User({
-                    email: email,
+                    email: req.body.email,
                     password: hash,
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
@@ -80,11 +79,11 @@ const googleAuth = async (req, res, next) => {
                     .then((result) => {
                         // Now that the user is created, generate a token and send it
                         const token = jwt.sign(
-                            { email: email, userId: result._id },
+                            { email: req.body.email, userId: result._id },
                             "secret_this_should_be_longer",
                             { expiresIn: "1h" }
                         );
-
+                        console.log('newUser?', newUser);
                         res.status(201).json({
                             token: token,
                             expiresIn: 3600,
