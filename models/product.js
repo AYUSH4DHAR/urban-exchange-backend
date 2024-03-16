@@ -36,8 +36,19 @@ const productSchema = mongoose.Schema({
     },
     productImages: {
         type: Array
+    },
+    address: {
+        type: Object,
+    },
+    created: {
+        type: Date,
+    },
+    lastUpdated: {
+        type: Date
+    },
+    sellerUname: {
+        type: String,
     }
-
 });
 
 module.exports = mongoose.model("Product", productSchema);

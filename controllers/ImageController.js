@@ -57,6 +57,7 @@ imageRouter.get("/:name", (req, res, next) => {
     else if (imageDir == 'avatar') directory += '/user';
     fs.readdir(directory, async (err, files) => {
         if (err) {
+            res.status(404).send("File Not Found");
             console.error(err);
         } else {
             let fileFound = false;

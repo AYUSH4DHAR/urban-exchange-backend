@@ -2,12 +2,87 @@ const { ObjectId } = require("mongodb");
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const Product = require('../models/product');
 const UserService = require('../services/UserService');
 const PRODUCT_CATEGORIES = ["Books", "Electronics", "Clothing", "Vehicles", "Accessories"];
+const STATES_INFO = [
+    ["Andhra Pradesh", "AP"],
+    ["Arunachal Pradesh", "AR"],
+    ["Assam", "AS"],
+    ["Bihar", "BR"],
+    ["Chhattisgarh", "CG"],
+    ["Goa", "GA"],
+    ["Gujarat", "GJ"],
+    ["Haryana", "HR"],
+    ["Himachal Pradesh", "HP"],
+    ["Jammu and Kashmir", "JK"],
+    ["Jharkhand", "JH"],
+    ["Karnataka", "KA"],
+    ["Kerala", "KL"],
+    ["Madhya Pradesh", "MP"],
+    ["Maharashtra", "MH"],
+    ["Manipur", "MN"],
+    ["Meghalaya", "ML"],
+    ["Mizoram", "MZ"],
+    ["Nagaland", "NL"],
+    ["Odisha", "OD"],
+    ["Punjab", "PB"],
+    ["Rajasthan", "RJ"],
+    ["Sikkim", "SK"],
+    ["Tamil Nadu", "TN"],
+    ["Telangana", "TS"],
+    ["Tripura", "TR"],
+    ["Uttarakhand", "UK"],
+    ["Uttar Pradesh", "UP"],
+    ["West Bengal", "WB"],
+    ["Andaman and Nicobar Islands", "AN"],
+    ["Chandigarh", "CH"],
+    ["Dadra and Nagar Haveli", "DN"],
+    ["Daman and Diu", "DD"],
+    ["Delhi", "DL"],
+    ["Lakshadweep", "LD"],
+    ["Puducherry", "PY"]
+];
 const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
+    const pinValidationInfo = await fetchAndValidatePIN(req.body.pincode, req.body.state);
+    if (pinValidationInfo.status == false) {
+        res.status(400).json({
+            status: 'failure',
+            message: 'Invalid PIN/State information'
+        })
+        return;
+    } else {
+        const result = pinValidationInfo.result;
+        if (result.length > 0) {
+            let i = 0;
+            while (i < result.length) {
+                if (result[i].longitude !== '' && result[i].latitude !== '') {
+                    let location = [parseFloat(result[i].longitude), parseFloat(result[i].latitude)];
+                    /**
+                     * for geo-spatial query
+                     * always store in [long, lat] format in that order, also these values should be floats
+                     * create an index in db
+                     * db.products.createIndex({"address.location": "2dsphere"});
+                    **/
+                    req.body.location = {
+                        type: "Point",
+                        coordinates: location
+                    };
+                    req.body.locationMeta = result;
+                    break;
+                }
+                i++;
+            }
+        }
+    }
+    const seller = req.body.seller;
+    const sellerInfo = await UserService._getUserById(seller);
+    if (sellerInfo) {
+        req.body.sellerUname = sellerInfo.username;
+    }
     fs.readdir(`${process.cwd()}/images/product`, async (err, files) => {
         if (err) {
             console.error(err);
@@ -31,9 +106,18 @@ const persistProduct = async (req, res, next) => {
         modelNo: req.body.modelNo ? req.body.modelNo : "",
         category: req.body.category ? req.body.category : "",
         seller: req.body.seller ? req.body.seller : new ObjectId(),
+        sellerUname: req.body.sellerUname ? req.body.sellerUname : '',
         boughtBy: req.body.boughtBy ? req.body.boughtBy : null,
         tag: req.body.tag,
-        productImages: req.body.productImages
+        productImages: req.body.productImages,
+        created: new Date(),
+        lastUpdated: new Date(),
+        address: {
+            location: req.body.location, // for geospatial query
+            state: req.body.state,
+            pin: req.body.pincode,
+            meta: req.body.locationMeta,
+        }
     });
     await product.save().then(async (createdProduct) => {
         await UserService.addToUserProductsPersist(req.body.seller, createdProduct._id).then(result => {
@@ -55,6 +139,22 @@ const persistProduct = async (req, res, next) => {
             data: null
         });
     });
+}
+const getPostalInfo = async (req, res, next) => {
+    const pin = req.body.pin;
+    const state = req.body.state;
+    const postalInfo = await fetchAndValidatePIN(pin, state);
+    res.status(200).json({
+        status: "success",
+        data: postalInfo
+    })
+}
+const fetchAndValidatePIN = async (pin, state) => {
+    // world postal collection
+    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-6ee88ae5-6da399ea-e54b2d1a-8dd18665e371eab8b1e`;
+    const response = await fetch(POSTAL_API);
+    const postalInfo = await response.json();
+    return postalInfo;
 }
 const createProductTag = async (req, res, next) => {
     const productTag = crypto.randomBytes(16).toString("hex");
@@ -174,6 +274,21 @@ const getCreateProductFields = async (req, res, next) => {
             type: 'file',
             required: true,
             multiple: true,
+        },
+        {
+            label: 'state',
+            fieldName: 'State',
+            type: 'autocomplete',
+            required: true,
+            multiple: false,
+            options: STATES_INFO,
+        },
+        {
+            label: 'pincode',
+            fieldName: 'PIN',
+            type: 'number',
+            required: true,
+            multiple: false,
         },
     ];
     res.status(200).json({
@@ -318,4 +433,6 @@ module.exports = {
     getProductsByPageNoAndPageSizeAndOrCategory,
     search,
     getProductsByIdList,
+    getPostalInfo,
+    fetchAndValidatePIN,
 }

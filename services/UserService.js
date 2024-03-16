@@ -10,7 +10,10 @@ const signUp = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then((hash) => {
         const user = new User({
             email: req.body.email,
-            password: hash,
+            password: hash,// Assuming 'username' is a field in your form
+            firstName: req.body.firstName, // Assuming 'firstName' is a field in your form
+            lastName: req.body.lastName,   // Assuming 'lastName' is a field in your form
+            phone: [req.body.phone]
         });
         user
             .save()
@@ -20,7 +23,7 @@ const signUp = async (req, res, next) => {
                 });
             })
             .catch((err) => {
-                res.status(500).json({
+                res.status(409).json({
                     error: err,
                 });
             });
@@ -28,20 +31,24 @@ const signUp = async (req, res, next) => {
 };
 
 const googleAuth = async (req, res, next) => {
-    const tokenId = req.body.idToken; // Assuming you send the Google ID token from the client
-    try {
-        const ticket = await client.verifyIdToken({
+    let tokenId = req.body.idToken; // Assuming you send the Google ID token from the client
+    if (tokenId) {
+        let ticket = client.verifyIdToken({
             idToken: tokenId,
             audience:
                 "1074394604196-610lm57lcj94ovdii34lfib07mcolbqj.apps.googleusercontent.com", // Verify that the token was issued to your client
         });
 
-        const payload = ticket.getPayload();
-        const email = payload.email;
+        if (ticket && typeof ticket.getBasicProfile === 'function') {
+            var profile = ticket.getBasicProfile();
+            var userId = profile.getId();
+            var userName = profile.getName();
+            var userEmail = profile.getEmail();
+
+        }
 
         // Check if the email already exists in your database
-        const existingUser = await User.findOne({ email });
-
+        const existingUser = await User.findOne({ email: req.body.email });
         if (existingUser) {
             // User already exists, generate a token and send it
             const token = jwt.sign(
@@ -59,7 +66,7 @@ const googleAuth = async (req, res, next) => {
             // User doesn't exist, create a new user
             bcrypt.hash("defaultPassword", 10).then((hash) => {
                 const newUser = new User({
-                    email: email,
+                    email: req.body.email,
                     password: hash,
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
@@ -72,15 +79,15 @@ const googleAuth = async (req, res, next) => {
                     .then((result) => {
                         // Now that the user is created, generate a token and send it
                         const token = jwt.sign(
-                            { email: email, userId: result._id },
+                            { email: req.body.email, userId: result._id },
                             "secret_this_should_be_longer",
                             { expiresIn: "1h" }
                         );
-
+                        console.log('newUser?', newUser);
                         res.status(201).json({
                             token: token,
                             expiresIn: 3600,
-                            user: newUser
+                            user: newUser,
                         });
                     })
                     .catch((err) => {
@@ -90,14 +97,9 @@ const googleAuth = async (req, res, next) => {
                     });
             });
         }
-    } catch (err) {
-        // Handle errors here
-        console.error(err);
-        res.status(401).json({
-            message: "Google Auth failed",
-        });
     }
 };
+
 
 const logIn = async (req, res, next) => {
     let fetchedUser;
@@ -143,7 +145,7 @@ const getAllUsers = async (req, res, next) => {
     });
 };
 const getUserById = async (req, res, next) => {
-    await User.findOne({ _id: req.params.id }).then(
+    await _getUserById(req.params.id).then(
         (user) => {
             user.password = undefined;
             res.status(200).json({
@@ -160,6 +162,9 @@ const getUserById = async (req, res, next) => {
         }
     );
 };
+const _getUserById = async (id) => {
+    return await User.findOne({ _id: id });
+}
 const deleteUserById = async (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(
         (result) => {
@@ -177,24 +182,17 @@ const deleteUserById = async (req, res, next) => {
 const addToUserProducts = async (req, res, next) => {
     const _id = req.body._id;
     const productId = req.body.productId;
-    addToUserProductsPersist(_id, productId).then(
-        (result) => {
-            res
-                .status(200)
-                .json({
-                    status: "success",
-                    message: "added products to user listed products",
-                });
-        },
-        (error) => {
-            console.error(error);
-            res.status(404).json({
-                message: "User Not Found",
-                data: null,
-            });
-        }
-    );
-};
+    User.findOneAndUpdate({ _id: _id }, { $push: { 'productsListed': productId } }).then(result => {
+        res.status(200).json({ status: "success", message: "added products to user listed products" });
+    }, (error) => {
+        console.error(error);
+        res.status(404).json({
+            message: "User Not Found",
+            data: null
+        })
+    })
+}
+
 const addToUserProductsPersist = async (_id, productId) => {
     return User.findOneAndUpdate(
         { _id: _id },
@@ -202,11 +200,59 @@ const addToUserProductsPersist = async (_id, productId) => {
     );
 };
 
+
+const getUserData = async (req, res) => {
+    const userDetails = req.body;
+
+    try {
+        const userData = await User.findOne({ _id: userDetails._id });
+
+        if (userData) {
+            res.json(userData);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: `Internal server error : ${error}` });
+    }
+}
+
+//function to set user data in db by using email from req.body.userDetails.email and data from req.body.userDetails
+const setUserData = async (req, res) => {
+    // const userEmail = req.body.userDetails.email;
+    const userdetails = req.body;
+    try {
+
+        //get user data from db by _id
+        let userData = await User.findOne({ _id: req.body._id });
+        // update the user data fields that are passed in req.body.userDetails
+        userData.firstName = req.body.firstName;
+        userData.lastName = req.body.lastName;
+        userData.username = req.body.username;
+        userData.avatar = req.body.avatar;
+        userData.description = req.body.description;
+        userData.Phone = [...new Set(userData.Phone.concat(req.body.Phone))];
+
+        //save the updated user data in db
+        let updatedUserData = await userData.save();
+
+
+
+        if (updatedUserData) {
+            res.json(updatedUserData);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 // This function is used to add the user's wishlist to the user db
 const addToUserWishlist = async (req, res, next) => {
     const _id = req.body._id;
-    let setQuery = {"wishlist": req.body.wishlist};
-    const query = { $set: setQuery};
+    let setQuery = { "wishlist": req.body.wishlist };
+    const query = { $set: setQuery };
     const options = { runValidators: true, new: true };
     User.findOneAndUpdate({ "_id": _id }, query, options).then(
         (result) => {
@@ -255,4 +301,8 @@ module.exports = {
     getUserById,
     addToUserWishlist,
     getUserWishlist,
+    getUserData,
+    setUserData,
+    _getUserById,
 };
+
