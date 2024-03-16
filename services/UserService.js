@@ -227,12 +227,12 @@ const addToUserWishlist = async (req, res, next) => {
 
 // This function is used to get the user's wishlist to the user db
 const getUserWishlist = async (req, res, next) => {
-    const _id = req.params._id;
+    const _id = req.params.id;
     User.find({ "_id": _id }).then(
         (result) => {
             res.status(200).json({
                 status: "success",
-                data: result.wishlist? result.wishlist : [],
+                data: (result && result[0] && result[0].wishlist)? result[0].wishlist : [],
             });
         },
         (error) => {
