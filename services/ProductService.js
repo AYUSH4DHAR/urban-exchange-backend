@@ -48,6 +48,7 @@ const createProduct = async (req, res, next) => {
     const productTag = req.body.tag;
     const productImages = [];
     const pinValidationInfo = await fetchAndValidatePIN(req.body.pincode, req.body.state);
+    console.log(pinValidationInfo, 'validationInfo');
     if (pinValidationInfo.status == false) {
         res.status(400).json({
             status: 'failure',

@@ -8,6 +8,7 @@ var session = require('express-session')
 // require('./services/passport-config')
 const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
+const chatRoute = require("./routes/chatRoute");
 const imageRoute = require("./routes/imagesRoute");
 require('dotenv').config();
 
@@ -53,6 +54,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
+app.use("/api/chat", chatRoute);
 app.use("/api/image", imageRoute);
 app.get("*", (req, res, next) => {
     res.status(404).json({
