@@ -85,7 +85,7 @@ const men_fields = [
     {
         label: "type",
         fieldName: "Type",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: MEN_CLOTHING_TYPES,
@@ -102,7 +102,7 @@ const women_fields = [
     {
         label: "type",
         fieldName: "Type",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: WOMEN_CLOTHING_TYPES,
@@ -120,7 +120,7 @@ const kids_fields = [
     {
         label: "ageGroup",
         fieldName: "AgeGroup",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: kids_age_groups
@@ -128,7 +128,7 @@ const kids_fields = [
     {
         label: "type",
         fieldName: "Type",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: KIDS_CLOTHING_TYPES,
@@ -152,7 +152,7 @@ const clothing_fields = [
     {
         label: "subCategory",
         fieldName: "Category",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: CLOTHING_CATEGORIES,

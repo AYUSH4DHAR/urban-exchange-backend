@@ -29,18 +29,20 @@ const pc_fields = [
     {
         label: "subCategory",
         fieldName: "Sub Category",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
+        options: [],
     },
 ];
 const audio_fields = [
     {
         label: "subCategory",
         fieldName: "Sub Category",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
+        options: []
     },
 ];
 
@@ -86,7 +88,7 @@ const electronics_fields = [
     {
         label: "subCategory",
         fieldName: "Category",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: ELECTRONICS_CATEGORIES,
