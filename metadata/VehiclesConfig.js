@@ -8,7 +8,7 @@ const bikes_fields = [
     {
         label: "type",
         fieldName: "Type",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: bike_types,
@@ -45,7 +45,7 @@ const vehicles_field = [
     {
         label: "subCategory",
         fieldName: "Category",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: VEHICLES_CATEGORIES,

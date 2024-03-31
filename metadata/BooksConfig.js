@@ -30,7 +30,7 @@ const books_fields = [
     {
         label: "genre",
         fieldName: "Genre",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
         options: BOOK_GENRES,
