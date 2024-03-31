@@ -136,15 +136,15 @@ const kids_fields = [
 ];
 const CLOTHING_CATEGORIES = [
     {
-        key: "Men",
+        category: "Men",
         fields: men_fields,
     },
     {
-        key: "Women",
+        category: "Women",
         fields: women_fields,
     },
     {
-        key: "Kids",
+        category: "Kids",
         fields: kids_fields,
     },
 ];
@@ -155,7 +155,8 @@ const clothing_fields = [
         type: "select",
         required: true,
         multiple: false,
-        options: CLOTHING_CATEGORIES,
+        options: CLOTHING_CATEGORIES.map(k => k.category),
+        metadata: CLOTHING_CATEGORIES,
     },
     {
         label: "material",
