@@ -64,23 +64,23 @@ const camera_fields = [
 ];
 const ELECTRONICS_CATEGORIES = [
     {
-        key: "SmartPhones",
+        category: "SmartPhones",
         fields: smartphone_fields,
     },
     {
-        key: "Cameras",
+        category: "Cameras",
         fields: camera_fields,
     },
     {
-        key: "Tabs",
+        category: "Tabs",
         fields: tab_fields,
     },
     {
-        key: "PCs & Accessories",
+        category: "PCs & Accessories",
         fields: pc_fields,
     },
     {
-        key: "Audio Peripherals",
+        category: "Audio Peripherals",
         fields: audio_fields,
     },
 ];
@@ -91,7 +91,8 @@ const electronics_fields = [
         type: "select",
         required: true,
         multiple: false,
-        options: ELECTRONICS_CATEGORIES,
+        options: ELECTRONICS_CATEGORIES.map(k => k.category),
+        metadata: ELECTRONICS_CATEGORIES,
     },
     {
         label: "brand",

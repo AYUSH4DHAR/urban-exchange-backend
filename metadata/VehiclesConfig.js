@@ -33,11 +33,11 @@ const cars_fields = [
 ];
 const VEHICLES_CATEGORIES = [
     {
-        key: "Cars",
+        category: "Cars",
         fields: cars_fields,
     },
     {
-        key: "Bikes",
+        category: "Bikes",
         fields: bikes_fields,
     },
 ];
@@ -48,7 +48,8 @@ const vehicles_field = [
         type: "select",
         required: true,
         multiple: false,
-        options: VEHICLES_CATEGORIES,
+        options: VEHICLES_CATEGORIES.map(k => k.category),
+        metadata: VEHICLES_CATEGORIES,
     },
     {
         label: "kmDriven",
