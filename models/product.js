@@ -48,6 +48,12 @@ const productSchema = mongoose.Schema({
     },
     sellerUname: {
         type: String,
+    },
+    hashtags: {
+        type: Array,
+    },
+    metadata: {
+        type: Object,
     }
 });
 

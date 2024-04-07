@@ -151,7 +151,7 @@ const CLOTHING_CATEGORIES = [
 const clothing_fields = [
     {
         label: "subCategory",
-        fieldName: "Category",
+        fieldName: "Sub Category (Clothing)",
         type: "select",
         required: true,
         multiple: false,

@@ -44,7 +44,7 @@ const VEHICLES_CATEGORIES = [
 const vehicles_field = [
     {
         label: "subCategory",
-        fieldName: "Category",
+        fieldName: "Sub Category (Vehicles)",
         type: "select",
         required: true,
         multiple: false,

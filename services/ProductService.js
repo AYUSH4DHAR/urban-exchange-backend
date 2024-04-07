@@ -6,6 +6,7 @@ const fetch = (...args) =>
     import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const Product = require("../models/product");
 const UserService = require("../services/UserService");
+const HashTagService = require("../services/HashTagService");
 const { getProductCategoryFields } = require("../metadata/ProductConfig");
 const PRODUCT_CATEGORIES = [
     "Books",
@@ -115,6 +116,8 @@ const createProduct = async (req, res, next) => {
                 if (fileTag && fileTag.includes(productTag)) productImages.push(file);
             });
             req.body.productImages = productImages;
+            let hashtags = req.body.hashtags;
+            await HashTagService.createOrUpdateHashTags(hashtags);
             await persistProduct(req, res, next);
         }
     });
@@ -134,6 +137,8 @@ const persistProduct = async (req, res, next) => {
         productImages: req.body.productImages,
         created: new Date(),
         lastUpdated: new Date(),
+        hashtags: req.body.hashtags,
+        metadata: req.body.metadata,
         address: {
             location: req.body.location, // for geospatial query
             state: req.body.state,
@@ -270,6 +275,15 @@ const getCreateProductFields = async (req, res, next) => {
             multiple: false,
         },
         {
+            label: "category",
+            fieldName: "Category",
+            type: "select",
+            required: true,
+            multiple: false,
+            options: PRODUCT_CATEGORIES,
+            metadata: PRODUCT_CATEGORIES_METADATA,
+        },
+        {
             label: "price",
             fieldName: "Price",
             type: "number",
@@ -283,36 +297,7 @@ const getCreateProductFields = async (req, res, next) => {
             required: true,
             multiple: false,
         },
-        {
-            label: "note",
-            fieldName: "Note",
-            type: "textarea",
-            required: false,
-            multiple: false,
-        },
-        {
-            label: "modelNo",
-            fieldName: "Model No",
-            type: "text",
-            required: true,
-            multiple: false,
-        },
-        {
-            label: "category",
-            fieldName: "Category",
-            type: "select",
-            required: true,
-            multiple: false,
-            options: PRODUCT_CATEGORIES,
-            metadata: PRODUCT_CATEGORIES_METADATA,
-        },
-        {
-            label: "images",
-            fieldName: "Images",
-            type: "file",
-            required: true,
-            multiple: true,
-        },
+
         {
             label: "state",
             fieldName: "State",
@@ -328,6 +313,28 @@ const getCreateProductFields = async (req, res, next) => {
             required: true,
             multiple: false,
         },
+        {
+            label: "note",
+            fieldName: "Note",
+            type: "textarea",
+            required: false,
+            multiple: false,
+        },
+        {
+            label: "images",
+            fieldName: "Images",
+            type: "file",
+            required: true,
+            multiple: true,
+        },
+        {
+            label: "hashtags",
+            fieldName: "Hash Tags",
+            type: "hashtag",
+            required: false,
+            multiple: false,
+        },
+
     ];
     res.status(200).json({
         message: "Fetched create product fields",
