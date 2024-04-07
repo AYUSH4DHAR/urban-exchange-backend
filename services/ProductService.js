@@ -6,6 +6,7 @@ const fetch = (...args) =>
     import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const Product = require("../models/product");
 const UserService = require("../services/UserService");
+const HashTagService = require("../services/HashTagService");
 const { getProductCategoryFields } = require("../metadata/ProductConfig");
 const PRODUCT_CATEGORIES = [
     "Books",
@@ -115,6 +116,8 @@ const createProduct = async (req, res, next) => {
                 if (fileTag && fileTag.includes(productTag)) productImages.push(file);
             });
             req.body.productImages = productImages;
+            let hashtags = req.body.hashtags;
+            await HashTagService.createOrUpdateHashTags(hashtags);
             await persistProduct(req, res, next);
         }
     });
@@ -134,6 +137,8 @@ const persistProduct = async (req, res, next) => {
         productImages: req.body.productImages,
         created: new Date(),
         lastUpdated: new Date(),
+        hashtags: req.body.hashtags,
+        metadata: req.body.metadata,
         address: {
             location: req.body.location, // for geospatial query
             state: req.body.state,
