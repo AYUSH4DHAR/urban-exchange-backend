@@ -28,7 +28,7 @@ const tab_fields = [
 const pc_fields = [
     {
         label: "subCategory",
-        fieldName: "Sub Category",
+        fieldName: "Sub Category (PC)",
         type: "select",
         required: true,
         multiple: false,
@@ -38,7 +38,7 @@ const pc_fields = [
 const audio_fields = [
     {
         label: "subCategory",
-        fieldName: "Sub Category",
+        fieldName: "Sub Category (Audio)",
         type: "select",
         required: true,
         multiple: false,
@@ -87,7 +87,7 @@ const ELECTRONICS_CATEGORIES = [
 const electronics_fields = [
     {
         label: "subCategory",
-        fieldName: "Category",
+        fieldName: "Sub Category (Electronics)",
         type: "select",
         required: true,
         multiple: false,

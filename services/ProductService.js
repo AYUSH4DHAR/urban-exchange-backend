@@ -270,6 +270,15 @@ const getCreateProductFields = async (req, res, next) => {
             multiple: false,
         },
         {
+            label: "category",
+            fieldName: "Category",
+            type: "select",
+            required: true,
+            multiple: false,
+            options: PRODUCT_CATEGORIES,
+            metadata: PRODUCT_CATEGORIES_METADATA,
+        },
+        {
             label: "price",
             fieldName: "Price",
             type: "number",
@@ -283,36 +292,7 @@ const getCreateProductFields = async (req, res, next) => {
             required: true,
             multiple: false,
         },
-        {
-            label: "note",
-            fieldName: "Note",
-            type: "textarea",
-            required: false,
-            multiple: false,
-        },
-        {
-            label: "modelNo",
-            fieldName: "Model No",
-            type: "text",
-            required: true,
-            multiple: false,
-        },
-        {
-            label: "category",
-            fieldName: "Category",
-            type: "select",
-            required: true,
-            multiple: false,
-            options: PRODUCT_CATEGORIES,
-            metadata: PRODUCT_CATEGORIES_METADATA,
-        },
-        {
-            label: "images",
-            fieldName: "Images",
-            type: "file",
-            required: true,
-            multiple: true,
-        },
+
         {
             label: "state",
             fieldName: "State",
@@ -328,6 +308,28 @@ const getCreateProductFields = async (req, res, next) => {
             required: true,
             multiple: false,
         },
+        {
+            label: "note",
+            fieldName: "Note",
+            type: "textarea",
+            required: false,
+            multiple: false,
+        },
+        {
+            label: "images",
+            fieldName: "Images",
+            type: "file",
+            required: true,
+            multiple: true,
+        },
+        {
+            label: "hashtags",
+            fieldName: "Hash Tags",
+            type: "hashtag",
+            required: false,
+            multiple: false,
+        },
+
     ];
     res.status(200).json({
         message: "Fetched create product fields",
