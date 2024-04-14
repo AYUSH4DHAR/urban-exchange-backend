@@ -117,6 +117,7 @@ const createProduct = async (req, res, next) => {
             });
             req.body.productImages = productImages;
             let hashtags = req.body.hashtags;
+            hashtags.push(req.body.category.toLocaleLowerCase());
             await HashTagService.createOrUpdateHashTags(hashtags);
             await persistProduct(req, res, next);
         }
@@ -260,9 +261,41 @@ const deleteProductById = async (req, res, next) => {
     );
 };
 const getProductCategories = async (req, res, next) => {
+    let metadata = [];
+    PRODUCT_CATEGORIES_METADATA.forEach(cat => {
+        let fields = JSON.parse(JSON.stringify(cat.fields));
+        let category = cat.category;
+        let field = fields.find(f => ['genre', 'subCategory', 'brand'].includes(f.label));
+        let options = [], subOptions = [];
+        if (field) {
+            options = field.options;
+            let metaData = field.metadata;
+            if (metaData) {
+                metaData.forEach(meta => {
+                    let metaFields = meta.fields.filter(f => ['type', 'subCategory', 'color', 'storageCapacity', 'cellularTech'].includes(f.label));
+                    metaFields.forEach(metaField => {
+                        if (metaField) {
+                            subOptions.push({
+                                category: meta.category,
+                                field: metaField.fieldName,
+                                options: metaField.options
+                            });
+                        }
+                    })
+
+                })
+            }
+        }
+        metadata.push({
+            category: category,
+            options: options,
+            subOptions: subOptions,
+        });
+    })
     res.status(200).json({
         message: "Fetched product categories",
         data: PRODUCT_CATEGORIES,
+        metadata: metadata,
     });
 };
 const getCreateProductFields = async (req, res, next) => {
