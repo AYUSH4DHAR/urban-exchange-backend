@@ -388,11 +388,23 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     let page = Number(req.query.page);
     let limit = Number(req.query.limit);
     let category = req.query.category;
+    let subfiltersL1, subfiltersL2, subfilters;
+    if (category) {
+        subfilters = String(category).split('|');
+        if (subfilters.length > 1) {
+            subfiltersL1 = subfilters[1];
+            if (subfilters[2].length > 0) subfiltersL2 = subfilters[2];
+            if (subfiltersL2) {
+                subfiltersL2 = subfiltersL2.split(',');
+            }
+        }
+    }
+
     let categoryExists = false;
     if (!category) {
         category = /./;
     } else {
-        category = String(category).split(",");
+        category = [String(category).split("|")[0]];
         categoryExists = true;
     }
     let data = await Product.aggregate([
@@ -404,6 +416,26 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
             },
         },
     ]);
+    let products = data[0].products;
+    products = products.filter(p => {
+        let filter = true;
+        if (subfiltersL1) {
+            if (p.metadata && ![p.metadata.subCategory, p.metadata.genre, p.metadata.brand].includes(subfiltersL1) || !p.metadata) filter = false;
+        }
+        if (subfiltersL2) {
+            let subfound = false;
+            subfiltersL2.forEach(sf => {
+                if (p.metadata && Object.values(p.metadata).includes(sf)) {
+                    subfound = true;
+                    return;
+                }
+            })
+            if (!subfound || !p.metadata) filter = false;
+        }
+        return filter;
+    })
+    data[0].products = products;
+    data[0].totalProducts = products.length;
     res.json({
         message: "successfully fetched products",
         data: data,
