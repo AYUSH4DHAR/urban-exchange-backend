@@ -117,6 +117,7 @@ const createProduct = async (req, res, next) => {
             });
             req.body.productImages = productImages;
             let hashtags = req.body.hashtags;
+            hashtags.push(req.body.category.toLocaleLowerCase());
             await HashTagService.createOrUpdateHashTags(hashtags);
             await persistProduct(req, res, next);
         }
@@ -260,9 +261,41 @@ const deleteProductById = async (req, res, next) => {
     );
 };
 const getProductCategories = async (req, res, next) => {
+    let metadata = [];
+    PRODUCT_CATEGORIES_METADATA.forEach(cat => {
+        let fields = JSON.parse(JSON.stringify(cat.fields));
+        let category = cat.category;
+        let field = fields.find(f => ['genre', 'subCategory', 'brand'].includes(f.label));
+        let options = [], subOptions = [];
+        if (field) {
+            options = field.options;
+            let metaData = field.metadata;
+            if (metaData) {
+                metaData.forEach(meta => {
+                    let metaFields = meta.fields.filter(f => ['type', 'subCategory', 'color', 'storageCapacity', 'cellularTech'].includes(f.label));
+                    metaFields.forEach(metaField => {
+                        if (metaField) {
+                            subOptions.push({
+                                category: meta.category,
+                                field: metaField.fieldName,
+                                options: metaField.options
+                            });
+                        }
+                    })
+
+                })
+            }
+        }
+        metadata.push({
+            category: category,
+            options: options,
+            subOptions: subOptions,
+        });
+    })
     res.status(200).json({
         message: "Fetched product categories",
         data: PRODUCT_CATEGORIES,
+        metadata: metadata,
     });
 };
 const getCreateProductFields = async (req, res, next) => {
@@ -355,11 +388,23 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     let page = Number(req.query.page);
     let limit = Number(req.query.limit);
     let category = req.query.category;
+    let subfiltersL1, subfiltersL2, subfilters;
+    if (category) {
+        subfilters = String(category).split('|');
+        if (subfilters.length > 1) {
+            subfiltersL1 = subfilters[1];
+            if (subfilters[2].length > 0) subfiltersL2 = subfilters[2];
+            if (subfiltersL2) {
+                subfiltersL2 = subfiltersL2.split(',');
+            }
+        }
+    }
+
     let categoryExists = false;
     if (!category) {
         category = /./;
     } else {
-        category = String(category).split(",");
+        category = [String(category).split("|")[0]];
         categoryExists = true;
     }
     let data = await Product.aggregate([
@@ -371,6 +416,26 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
             },
         },
     ]);
+    let products = data[0].products;
+    products = products.filter(p => {
+        let filter = true;
+        if (subfiltersL1) {
+            if (p.metadata && ![p.metadata.subCategory, p.metadata.genre, p.metadata.brand].includes(subfiltersL1) || !p.metadata) filter = false;
+        }
+        if (subfiltersL2) {
+            let subfound = false;
+            subfiltersL2.forEach(sf => {
+                if (p.metadata && Object.values(p.metadata).includes(sf)) {
+                    subfound = true;
+                    return;
+                }
+            })
+            if (!subfound || !p.metadata) filter = false;
+        }
+        return filter;
+    })
+    data[0].products = products;
+    data[0].totalProducts = products.length;
     res.json({
         message: "successfully fetched products",
         data: data,
