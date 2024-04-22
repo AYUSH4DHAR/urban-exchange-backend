@@ -15,6 +15,40 @@ chatService.getChat = async (req, res, next) => {
     }
 };
 
+chatService.getChatsForUser = async (req, res, next) => {
+    try {
+        // Message.find where buyer == req.params.id or seller == req.params.id
+        console.log(req.body);
+
+        const chats = await Message.find({
+                                 $or: [
+                                     { buyer: req.body.sender },
+                                     { seller: req.body.sender }
+                                    ]
+    });
+    res.json(chats);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+//getChatsForProduct
+chatService.getChatsForProduct = async (req, res, next) => {
+    try {
+        // Message.find where prodId == req.params.id
+        console.log(req.body);
+
+        const chats = await Message.find({
+                                 prodId: req.body.prodId
+    });
+    res.json(chats);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
 chatService.saveChat = async (req, res, next) => {
     try {
         let chatObj = {
@@ -56,7 +90,7 @@ chatService.updateChat = async (req, res, next) => {
         if (!chat) {
             return res.status(404).json({ message: 'Chat not found' });
         }
-        chat.messages.push({ $each: req.body.messages });
+        chat.messages = req.body.messages;
         const updatedChat = await chat.save();
         res.json(updatedChat);
     }
