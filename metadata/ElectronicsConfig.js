@@ -1,25 +1,104 @@
 
+const COLORS = [
+    "Black",
+    "White",
+    "Silver",
+    "Gold",
+    "Rose Gold",
+    "Space Gray",
+    "Midnight Green",
+    "Blue",
+    "Red",
+    "Purple"
+];
+const CELLULAR_TECHNOLOGY = [
+    "4G (LTE)",
+    "5G (NR)"
+];
+const STORAGE_CAPACITY = [
+    "128GB",
+    "256GB",
+    "512GB",
+    "1TB"
+];
+const TOP_BRANDS = [
+    "Apple",
+    "Samsung",
+    "Sony",
+    "LG",
+    "Panasonic",
+    "Philips",
+    "Microsoft",
+    "HP",
+    "Dell",
+    "Lenovo",
+    "Huawei",
+    "Xiaomi",
+    "Canon",
+    "Nikon",
+    "Bose",
+    "Asus",
+    "Acer",
+    "Toshiba",
+    "Nintendo",
+    "GoPro",
+    "Fitbit",
+    "Garmin",
+    "JBL",
+    "Harman Kardon",
+    "Beats by Dre",
+    "Razer",
+    "Sennheiser",
+    "Bose",
+    "Vizio",
+    "Sharp",
+    "Hisense",
+    "TCL",
+    "Western Digital",
+    "Seagate",
+    "SanDisk",
+    "Corsair",
+    "Roku",
+    "Netgear",
+    "Linksys",
+    "Ubiquiti Networks",
+    "Fujifilm",
+    "Pioneer",
+    "Yamaha",
+    "Marantz",
+    "Onkyo",
+    "Denon",
+    "Bang & Olufsen",
+    "Klipsch",
+    "Sonos",
+    "Polaroid"
+];
+
+
 const smartphone_fields = [
     {
         label: "storageCapacity",
         fieldName: "Storage Capacity",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
+        options: STORAGE_CAPACITY
     },
     {
         label: "color",
         fieldName: "Color",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
+        options: COLORS,
     },
     {
         label: "cellularTech",
         fieldName: "Cellular Technology",
-        type: "text",
+        type: "select",
         required: true,
         multiple: false,
+        options: CELLULAR_TECHNOLOGY,
     },
 ];
 const tab_fields = [
@@ -28,7 +107,7 @@ const tab_fields = [
 const pc_fields = [
     {
         label: "subCategory",
-        fieldName: "Sub Category",
+        fieldName: "Sub Category (PC)",
         type: "select",
         required: true,
         multiple: false,
@@ -38,7 +117,7 @@ const pc_fields = [
 const audio_fields = [
     {
         label: "subCategory",
-        fieldName: "Sub Category",
+        fieldName: "Sub Category (Audio)",
         type: "select",
         required: true,
         multiple: false,
@@ -87,7 +166,7 @@ const ELECTRONICS_CATEGORIES = [
 const electronics_fields = [
     {
         label: "subCategory",
-        fieldName: "Category",
+        fieldName: "Sub Category (Electronics)",
         type: "select",
         required: true,
         multiple: false,
@@ -97,9 +176,10 @@ const electronics_fields = [
     {
         label: "brand",
         fieldName: "Brand",
-        type: "text",
+        type: "autocomplete",
         required: true,
         multiple: false,
+        options: TOP_BRANDS,
     },
     {
         label: "modelName",

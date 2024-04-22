@@ -21,8 +21,8 @@ const BOOK_GENRES = [
 ];
 const books_fields = [
     {
-        label: "Title",
-        fieldName: "Title",
+        label: "title",
+        fieldName: "Title (Book)",
         type: "text",
         required: true,
         multiple: false,
