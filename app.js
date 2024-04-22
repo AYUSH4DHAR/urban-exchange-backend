@@ -11,6 +11,7 @@ const productRoute = require("./routes/productsRoute");
 const usersRoute = require("./routes/usersRoute");
 const chatRoute = require("./routes/chatRoute");
 const imageRoute = require("./routes/imagesRoute");
+const hashRoute = require("./routes/hashRoute");
 require('dotenv').config();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -84,9 +85,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
 app.use("/api/image", imageRoute);
+
 app.use("/api/chat", chatRoute);
 
 
+
+
+app.use("/api/hashtag", hashRoute);
 
 app.get("*", (req, res, next) => {
     res.status(404).json({
