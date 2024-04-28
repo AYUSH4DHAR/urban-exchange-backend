@@ -33,21 +33,21 @@ mongoose
         console.log("Connection failed!");
     });
 
-
+    const obj = {};
     io.on('connection', socket => {
         console.log('New client connected');
+        socket.on("createConnection", (userId) => {
+            obj[userId] = socket.id;
+        });
     
         socket.on('disconnect', () => {
             console.log('Client disconnected');
         });
     
         // Handle chat message events
-        socket.on('chatMessage', async (message) => {
-            // Save message to the database
-            console.log(message);
-            // Example: const savedMessage = await Message.create(message);
-            // Broadcast the message to all clients
-            io.emit('chatMessage', message);
+        socket.on('chatMessage', async (body) => {
+            io.to(obj[body.receiverId]).emit("receivedMsg", body.message);
+            // io.emit('receivedMsg', message);
         });
     });   
 
