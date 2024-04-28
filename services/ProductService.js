@@ -188,7 +188,7 @@ const getPostalInfo = async (req, res, next) => {
 };
 const fetchAndValidatePIN = async (pin, state) => {
     // world postal collection
-    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-6ee88ae5-6da399ea-e54b2d1a-8dd18665e371eab8b1e`;
+    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-ab3ee8a4-0356bbce-2a765940-5de09a662e8094afc06`;
     const response = await fetch(POSTAL_API);
     const postalInfo = await response.json();
     return postalInfo;
@@ -377,8 +377,8 @@ const getCreateProductFields = async (req, res, next) => {
 const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     // assign default page number and page size
     // require total length for pagination
-    let latitude = (req.query.latitude && req.query.latitude!='')? req.query.latitude : '';
-    let longitude = (req.query.longitude && req.query.longitude!='')? req.query.longitude : '';
+    let latitude = (req.query.latitude && req.query.latitude != '') ? req.query.latitude : '';
+    let longitude = (req.query.longitude && req.query.longitude != '') ? req.query.longitude : '';
     if (
         !req.query.page ||
         !req.query.limit ||
@@ -411,11 +411,11 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     }
 
     let data;
-    if(latitude!='' && longitude!='') {
+    if (latitude != '' && longitude != '') {
         data = await Product.aggregate([
             {
                 $geoNear: {
-                    near: { type: "Point", coordinates: [ Number(longitude), Number(latitude) ] },
+                    near: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
                     distanceField: "dist.calculated", // where the distance will be stored
                     maxDistance: 10000, // 10 kilometers in meters
                     spherical: true
