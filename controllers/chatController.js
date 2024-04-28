@@ -24,5 +24,14 @@ chatRouter.post("/updateChat", async (req, res, next) => {
   await chatService.updateChat(req, res, next);
 });
 
+chatRouter.post("/getChatsForUser", async (req, res, next) => {
+  await chatService.getChatsForUser(req, res, next);
+});
+
+//getChatsForProduct
+chatRouter.post("/getChatsForProduct", async (req, res, next) => {
+  await chatService.getChatsForProduct(req, res, next);
+});
+
 
 module.exports = chatRouter;

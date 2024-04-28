@@ -377,6 +377,8 @@ const getCreateProductFields = async (req, res, next) => {
 const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     // assign default page number and page size
     // require total length for pagination
+    let latitude = (req.query.latitude && req.query.latitude!='')? req.query.latitude : '';
+    let longitude = (req.query.longitude && req.query.longitude!='')? req.query.longitude : '';
     if (
         !req.query.page ||
         !req.query.limit ||
@@ -407,15 +409,38 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
         category = [String(category).split("|")[0]];
         categoryExists = true;
     }
-    let data = await Product.aggregate([
-        { $match: { category: categoryExists ? { $in: category } : category } },
-        {
-            $facet: {
-                products: [{ $skip: page * limit }, { $limit: limit }],
-                totalProducts: [{ $count: "count" }],
+
+    let data;
+    if(latitude!='' && longitude!='') {
+        data = await Product.aggregate([
+            {
+                $geoNear: {
+                    near: { type: "Point", coordinates: [ Number(longitude), Number(latitude) ] },
+                    distanceField: "dist.calculated", // where the distance will be stored
+                    maxDistance: 10000, // 10 kilometers in meters
+                    spherical: true
+                }
             },
-        },
-    ]);
+            { $match: { category: categoryExists ? { $in: category } : category } },
+            {
+                $facet: {
+                    products: [{ $skip: page * limit }, { $limit: limit }],
+                    totalProducts: [{ $count: "count" }],
+                },
+            },
+        ]);
+    }
+    else {
+        data = await Product.aggregate([
+            { $match: { category: categoryExists ? { $in: category } : category } },
+            {
+                $facet: {
+                    products: [{ $skip: page * limit }, { $limit: limit }],
+                    totalProducts: [{ $count: "count" }],
+                },
+            },
+        ]);
+    }
     let products = data[0].products;
     products = products.filter(p => {
         let filter = true;
@@ -537,6 +562,16 @@ const getProductsByIdList = async (req, res, next) => {
         });
     }
 };
+const validateIfPinCodeMatchesState = async (req, res, next) => {
+    let attributeValue = req.body.attributeValue;
+    let postalBaseUrl = `https://api.postalpincode.in/pincode/${attributeValue}`;
+    const response = await fetch(postalBaseUrl);
+    const data = await response.json();
+    res.status(200).json({
+        status: "success",
+        data: data,
+    });
+};
 module.exports = {
     createProduct,
     getAllProducts,
@@ -550,4 +585,5 @@ module.exports = {
     getProductsByIdList,
     getPostalInfo,
     fetchAndValidatePIN,
+    validateIfPinCodeMatchesState
 };

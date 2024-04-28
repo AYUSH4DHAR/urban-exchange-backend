@@ -16,6 +16,9 @@ productsRouter.get("/tag", async (req, res, next) => {
 productsRouter.get("/create-product-fields", async (req, res, next) => {
     await productService.getCreateProductFields(req, res, next);
 })
+productsRouter.post("/validatePin", async (req, res, next) => {
+    await productService.validateIfPinCodeMatchesState(req, res, next);
+})
 productsRouter.get("/product-categories", async (req, res, next) => {
     await productService.getProductCategories(req, res, next);
 })

@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 var path = require('path');
 const mongoose = require("mongoose");
 const app = express();
+const http = require('http');
 var passport = require('passport')
 var session = require('express-session')
 // require('./services/passport-config')
@@ -12,15 +13,43 @@ const chatRoute = require("./routes/chatRoute");
 const imageRoute = require("./routes/imagesRoute");
 const hashRoute = require("./routes/hashRoute");
 require('dotenv').config();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
+
+
 
 mongoose
-    .connect(process.env.MONGODB_URI)
+    .connect('mongodb+srv://uex:uex@urbanexchange.54fzlvg.mongodb.net/?retryWrites=true&w=majority')
     .then(() => {
         console.log("Connected to database!");
     })
     .catch(() => {
         console.log("Connection failed!");
     });
+
+
+    io.on('connection', socket => {
+        console.log('New client connected');
+    
+        socket.on('disconnect', () => {
+            console.log('Client disconnected');
+        });
+    
+        // Handle chat message events
+        socket.on('chatMessage', async (message) => {
+            // Save message to the database
+            console.log(message);
+            // Example: const savedMessage = await Message.create(message);
+            // Broadcast the message to all clients
+            io.emit('chatMessage', message);
+        });
+    });   
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -42,7 +71,7 @@ app.use((req, res, next) => {
 
 app.use(
     session({
-        secret: process.env.SESSION_KEY, // Replace with a secure secret
+        secret: 'OEOpdQIwmwgWUd8X1xkWrsQGBz_z', // Replace with a secure secret
         resave: true,
         saveUninitialized: true,
     })
@@ -55,16 +84,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/api/product", productRoute);
 app.use("/api/user", usersRoute);
-app.use("/api/chat", chatRoute);
 app.use("/api/image", imageRoute);
+
+app.use("/api/chat", chatRoute);
+
+
+
+
 app.use("/api/hashtag", hashRoute);
+
 app.get("*", (req, res, next) => {
     res.status(404).json({
         status: "Failure",
         message: "API Not Found"
     })
 })
+
+
+
 const PORT = 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
 });
