@@ -48,7 +48,7 @@ const googleAuth = async (req, res, next) => {
         }
 
         // Check if the email already exists in your database
-        const existingUser = await User.findOne({ email: req.body.email });
+        const existingUser = await User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date() }, { new: true });
         if (existingUser) {
             // User already exists, generate a token and send it
             const token = jwt.sign(
@@ -103,7 +103,7 @@ const googleAuth = async (req, res, next) => {
 
 const logIn = async (req, res, next) => {
     let fetchedUser;
-    User.findOne({ email: req.body.email })
+    User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date() }, { new: true })
         .then((user) => {
             if (!user) {
                 return res.status(401).json({
@@ -231,7 +231,7 @@ const setUserData = async (req, res) => {
         userData.username = req.body.username;
         userData.avatar = req.body.avatar;
         userData.description = req.body.description;
-        userData.Phone = [...new Set(userData.Phone.concat(req.body.Phone))];
+        userData.Phone = [req.body.Phone];
 
         //save the updated user data in db
         let updatedUserData = await userData.save();
@@ -278,7 +278,7 @@ const getUserWishlist = async (req, res, next) => {
         (result) => {
             res.status(200).json({
                 status: "success",
-                data: (result && result[0] && result[0].wishlist)? result[0].wishlist : [],
+                data: (result && result[0] && result[0].wishlist) ? result[0].wishlist : [],
             });
         },
         (error) => {

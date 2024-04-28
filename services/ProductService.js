@@ -435,7 +435,7 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
         return filter;
     })
     data[0].products = products;
-    data[0].totalProducts = products.length;
+    data[0].totalProducts = [{ count: products.length }];
     res.json({
         message: "successfully fetched products",
         data: data,

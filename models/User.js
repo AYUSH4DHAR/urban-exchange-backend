@@ -12,12 +12,13 @@ const userSchema = mongoose.Schema({
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
   description: { type: String, required: false },
-  
+
   avatar: { type: String, required: false },
   productsListed: { type: Array },
   productsPurchased: { type: Array },
   Phone: { type: Array },
   wishlist: { type: Array },
+  lastLogin: { type: Date },
 });
 
 userSchema.plugin(uniqueValidator);
