@@ -17,10 +17,10 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
+        origin: "*",
+        methods: ["GET", "POST"]
     }
-  });
+});
 
 
 
@@ -33,36 +33,26 @@ mongoose
         console.log("Connection failed!");
     });
 
-    const obj = {};
-    io.on('connection', socket => {
-        console.log('New client connected');
-        socket.on("createConnection", (userId) => {
-            obj[userId] = socket.id;
-        });
-    
-        socket.on('disconnect', () => {
-            console.log('Client disconnected');
-        });
-    
-        // Handle chat message events
-        socket.on('chatMessage', async (body) => {
-            io.to(obj[body.receiverId]).emit("receivedMsg", body.message);
-            // io.emit('receivedMsg', message);
-        });
-    });   
+const obj = {};
+io.on('connection', socket => {
+    console.log('New client connected', socket.id);
+    socket.on("createConnection", (userId) => {
+        obj[userId] = socket.id;
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+
+    socket.on('chatMessage', async (body) => {
+        console.log('message received', body);
+        io.emit('receivedMsg', body);
+    });
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((req, res, next) => {
-    // res.setHeader("Access-Control-Allow-Origin", "*");
-    // res.setHeader(
-    //     "Access-Control-Allow-Headers",
-    //     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-    // );
-    // res.setHeader(
-    //     "Access-Control-Allow-Methods",
-    //     "GET, POST, PATCH, DELETE, OPTIONS"
-    // );
     res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allow these HTTP methods
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -88,9 +78,6 @@ app.use("/api/image", imageRoute);
 
 app.use("/api/chat", chatRoute);
 
-
-
-
 app.use("/api/hashtag", hashRoute);
 
 app.get("*", (req, res, next) => {
@@ -99,8 +86,6 @@ app.get("*", (req, res, next) => {
         message: "API Not Found"
     })
 })
-
-
 
 const PORT = 5000;
 server.listen(PORT, () => {
