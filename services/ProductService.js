@@ -411,13 +411,14 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     }
 
     let data;
+    console.log(category, 'categoryHere', latitude, longitude);
     if (latitude != '' && longitude != '') {
         data = await Product.aggregate([
             {
                 $geoNear: {
                     near: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
                     distanceField: "dist.calculated", // where the distance will be stored
-                    maxDistance: 10000, // 10 kilometers in meters
+                    maxDistance: 1000000, // 10 kilometers in meters
                     spherical: true
                 }
             },
