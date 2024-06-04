@@ -40,7 +40,9 @@ userRouter.post('/add-wishlist', async (req, res, next) => {
 userRouter.get('/get-wishlist/:id', async (req, res, next) => {
   await userService.getUserWishlist(req, res, next);
 });
-
+userRouter.post('/pingUser', async (req, res, next) => {
+  await userService.pingUser(req, res, next);
+});
 userRouter.get('/google/login', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'] }))
 
 userRouter.get('auth/google/callback', passport.authenticate('google', { failureRedirect: '/err' }), (req, res) => {

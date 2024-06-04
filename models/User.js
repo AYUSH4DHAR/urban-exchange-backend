@@ -19,6 +19,7 @@ const userSchema = mongoose.Schema({
   Phone: { type: Array },
   wishlist: { type: Array },
   lastLogin: { type: Date },
+  lastActive: { type: Date },
 });
 
 userSchema.plugin(uniqueValidator);
