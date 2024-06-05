@@ -45,7 +45,6 @@ chatService.saveChat = async (req, res, next) => {
     try {
         let chatObj = {
             buyer: req.body.currentUser._id,
-            buyerName: req.body.currentUser.firstName,
             prodId: req.body.prodId,
             seller: req.body.seller,
             messages: [],
