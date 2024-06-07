@@ -29,7 +29,7 @@ chatRouter.post("/setChatUpdateRead", async (req, res, next) => {
 chatRouter.post("/getChatsForUser", async (req, res, next) => {
   await chatService.getChatsForUser(req, res, next);
 });
-chatRouter.post("/getChatsForUser", async (req, res, next) => {
+chatRouter.post("/getUnreadCount", async (req, res, next) => {
   await chatService.getUnreadCount(req, res, next);
 });
 chatRouter.post("/getChatsForProduct", async (req, res, next) => {
