@@ -23,12 +23,15 @@ chatRouter.post("/getChatId", async (req, res, next) => {
 chatRouter.post("/updateChat", async (req, res, next) => {
   await chatService.updateChat(req, res, next);
 });
-
+chatRouter.post("/setChatUpdateRead", async (req, res, next) => {
+  await chatService.setChatUpdateRead(req, res, next);
+});
 chatRouter.post("/getChatsForUser", async (req, res, next) => {
   await chatService.getChatsForUser(req, res, next);
 });
-
-//getChatsForProduct
+chatRouter.post("/getChatsForUser", async (req, res, next) => {
+  await chatService.getUnreadCount(req, res, next);
+});
 chatRouter.post("/getChatsForProduct", async (req, res, next) => {
   await chatService.getChatsForProduct(req, res, next);
 });

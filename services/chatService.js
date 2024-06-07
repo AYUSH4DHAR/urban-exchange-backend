@@ -13,10 +13,23 @@ chatService.getChat = async (req, res, next) => {
         next(error);
     }
 };
+chatService.setChatUpdateRead = async (req, res, next) => {
+    const chatId = req.body.chatId;
+    try {
+        const chat = await Chat.findById({ _id: chatId });
+        if (!chat) {
+            return res.status(404).json({ message: "Chat not found", data: null });
+        }
+        chat.unread = 0;
+        const updatedChat = await chat.save();
+        res.json({ message: "success", data: updatedChat.unread });
+    } catch (error) {
+        next(error);
+    }
+};
 
 chatService.getChatsForUser = async (req, res, next) => {
     try {
-        console.log(req.body);
         const chats = await Chat.find({
             $or: [{ buyer: req.body.sender }, { seller: req.body.sender }],
         });
@@ -66,6 +79,7 @@ chatService.saveChat = async (req, res, next) => {
             prodId: req.body.prodId,
             seller: sellerInf._id,
             messages: [],
+            unread: 0,
         };
         const chat = new Chat(chatObj);
         const savedChat = await chat.save();
@@ -101,11 +115,26 @@ chatService.updateChat = async (req, res, next) => {
             return res.status(404).json({ message: "Chat not found" });
         }
         chat.messages = req.body.messages;
+        chat.unread = req.body.unread;
+        chat.unreadBy = req.body.unreadBy;
         const updatedChat = await chat.save();
         res.json(updatedChat);
     } catch (error) {
         next(error);
     }
 };
-
+chatService.getUnreadCount = async (req, res, next) => {
+    try {
+        const chats = await Chat.find({
+            $or: [{ buyer: req.body.sender }, { seller: req.body.sender }],
+        });
+        let unreadCount = 0;
+        chats.forEach(chat => {
+            unreadCount += Number(chat.unread) ? Number(chat.unread) : 0;
+        })
+        res.json({ status: "success", unreadCount: unreadCount });
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = chatService;

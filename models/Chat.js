@@ -38,6 +38,14 @@ const chatSchema = new mongoose.Schema({
       ],
     default: []
   },
+  unread: {
+    type: Number,
+    required: true,
+  },
+  unreadBy: {
+    type: ObjectId,
+    required: true,
+  },
   prodId: {
     type: ObjectId,
     required: false
