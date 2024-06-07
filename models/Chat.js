@@ -6,6 +6,14 @@ const chatSchema = new mongoose.Schema({
     type: ObjectId,
     required: true,
   },
+  buyerInfo: {
+    type: Object,
+    required: true,
+  },
+  sellerInfo: {
+    type: Object,
+    required: true,
+  },
   seller: {
     type: ObjectId,
     required: true,

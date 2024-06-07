@@ -42,11 +42,29 @@ chatService.getChatsForProduct = async (req, res, next) => {
 };
 
 chatService.saveChat = async (req, res, next) => {
+    const buyerInf = req.body.currentUser;
+    const sellerInf = req.body.seller;
     try {
         let chatObj = {
-            buyer: req.body.currentUser._id,
+            buyer: buyerInf._id,
+            buyerInfo: {
+                name: buyerInf.name,
+                email: buyerInf.email,
+                firstName: buyerInf.firstName,
+                lastName: buyerInf.lastName,
+                avatar: buyerInf.avatar,
+                lastActive: buyerInf.lastActive,
+            },
+            sellerInfo: {
+                name: sellerInf.name,
+                email: sellerInf.email,
+                firstName: sellerInf.firstName,
+                lastName: sellerInf.lastName,
+                avatar: sellerInf.avatar,
+                lastActive: sellerInf.lastActive,
+            },
             prodId: req.body.prodId,
-            seller: req.body.seller,
+            seller: sellerInf._id,
             messages: [],
         };
         const chat = new Chat(chatObj);
