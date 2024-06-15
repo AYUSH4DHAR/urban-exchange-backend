@@ -35,7 +35,24 @@ const createOrUpdateHashTags = async (hashtags) => {
         }
     }
 }
+const topHashTags = async (req, res, next) => {
+    const topCount = req.params.count;
+    try {
+        let topHashTags = await HashTag.find({}, { tag: 1, items: 1 }, { sort: { "items": -1 } }).limit(topCount);
+        res.send({
+            message: "Success",
+            data: topHashTags,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "HashTags Not Found",
+            data: null,
+        });
+    }
+}
 module.exports = {
     searchHashTag,
     createOrUpdateHashTags,
+    topHashTags,
 }
