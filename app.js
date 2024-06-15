@@ -48,6 +48,10 @@ io.on('connection', socket => {
         console.log('message received', body);
         io.emit('receivedMsg', body);
     });
+    socket.on('sendNotif', async (body) => {
+        console.log('notification received', body);
+        io.emit('receivedNotif', body);
+    })
 });
 
 app.use(bodyParser.json());

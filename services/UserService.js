@@ -48,7 +48,7 @@ const googleAuth = async (req, res, next) => {
         }
 
         // Check if the email already exists in your database
-        const existingUser = await User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date() }, { new: true });
+        const existingUser = await User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date(), lastActive: new Date() }, { new: true });
         if (existingUser) {
             // User already exists, generate a token and send it
             const token = jwt.sign(
@@ -103,7 +103,7 @@ const googleAuth = async (req, res, next) => {
 
 const logIn = async (req, res, next) => {
     let fetchedUser;
-    User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date() }, { new: true })
+    User.findOneAndUpdate({ email: req.body.email }, { lastLogin: new Date(), lastActive: new Date() }, { new: true })
         .then((user) => {
             if (!user) {
                 return res.status(401).json({
@@ -164,6 +164,24 @@ const getUserById = async (req, res, next) => {
 };
 const _getUserById = async (id) => {
     return await User.findOne({ _id: id });
+}
+const pingUser = async (req, res, next) => {
+    const options = { runValidators: true, new: true };
+    User.findOneAndUpdate({ "_id": req.body._id }, { $set: { lastActive: new Date() } }, options).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                message: "user ping status: online",
+            });
+        },
+        (error) => {
+            console.error(error);
+            res.status(404).json({
+                message: "User Not Found",
+                data: null,
+            });
+        }
+    );
 }
 const deleteUserById = async (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(
@@ -304,5 +322,6 @@ module.exports = {
     getUserData,
     setUserData,
     _getUserById,
+    pingUser,
 };
 

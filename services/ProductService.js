@@ -188,7 +188,7 @@ const getPostalInfo = async (req, res, next) => {
 };
 const fetchAndValidatePIN = async (pin, state) => {
     // world postal collection
-    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-ab3ee8a4-0356bbce-2a765940-5de09a662e8094afc06`;
+    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-27b16ede-9806f548-c8a04532-82b48e665e80bac07a5`;
     const response = await fetch(POSTAL_API);
     const postalInfo = await response.json();
     return postalInfo;
