@@ -274,10 +274,17 @@ const addToUserWishlist = async (req, res, next) => {
     const options = { runValidators: true, new: true };
     User.findOneAndUpdate({ "_id": _id }, query, options).then(
         (result) => {
-            res.status(200).json({
-                status: "success",
-                message: "added products to user listed products",
-            });
+            if (result != null) {
+                res.status(200).json({
+                    status: "success",
+                    message: "added products to user listed products",
+                });
+            } else {
+                res.status(404).json({
+                    message: "user not found",
+                    data: null
+                })
+            }
         },
         (error) => {
             console.error(error);

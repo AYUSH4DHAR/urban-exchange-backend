@@ -411,7 +411,6 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     }
 
     let data;
-    console.log(category, 'categoryHere', latitude, longitude);
     if (latitude != '' && longitude != '') {
         data = await Product.aggregate([
             {
