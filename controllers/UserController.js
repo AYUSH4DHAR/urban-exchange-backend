@@ -22,24 +22,27 @@ userRouter.post("/login", async (req, res, next) => {
 userRouter.post("/googleAuth", async (req, res, next) => {
   await userService.googleAuth(req, res, next);
 });
+// change name: POST [/user base]/products
 userRouter.post('/add-product', async (req, res, next) => {
   await userService.addToUserProducts(req, res, next);
 })
-
+// change API signature GET - /user
 userRouter.post('/getUserDetails', async (req, res, next) => {
   await userService.getUserData(req, res, next);
 })
-
+// change API signature PUT /user
 userRouter.post('/setUserDetails', async (req, res, next) => {
   await userService.setUserData(req, res, next);
 })
-
+// change name [/user base]/wishlist [add is implicit]
 userRouter.post('/add-wishlist', async (req, res, next) => {
   await userService.addToUserWishlist(req, res, next);
 });
+// change name [/user base]/wishlist/:id [get is implicit]
 userRouter.get('/get-wishlist/:id', async (req, res, next) => {
   await userService.getUserWishlist(req, res, next);
 });
+// change name /ping
 userRouter.post('/pingUser', async (req, res, next) => {
   await userService.pingUser(req, res, next);
 });

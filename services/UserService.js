@@ -5,7 +5,6 @@ const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
     "1074394604196-610lm57lcj94ovdii34lfib07mcolbqj.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
-
 const signUp = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then((hash) => {
         const user = new User({
