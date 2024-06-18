@@ -68,6 +68,7 @@ const createProduct = async (req, res, next) => {
         req.body.state
     );
     console.log(pinValidationInfo, "validationInfo");
+
     if (pinValidationInfo.status == false) {
         res.status(400).json({
             status: "failure",
@@ -188,7 +189,7 @@ const getPostalInfo = async (req, res, next) => {
 };
 const fetchAndValidatePIN = async (pin, state) => {
     // world postal collection
-    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-27b16ede-9806f548-c8a04532-82b48e665e80bac07a5`;
+    let POSTAL_API = `https://api.worldpostallocations.com/pincode?postalcode=${pin}&countrycode=IN&apikey=2214-3bb5aa38-0f4b44fa-af775401-e089c5667195928dc34`;
     const response = await fetch(POSTAL_API);
     const postalInfo = await response.json();
     return postalInfo;
@@ -411,7 +412,6 @@ const getProductsByPageNoAndPageSizeAndOrCategory = async (req, res, next) => {
     }
 
     let data;
-    console.log(category, 'categoryHere', latitude, longitude);
     if (latitude != '' && longitude != '') {
         data = await Product.aggregate([
             {

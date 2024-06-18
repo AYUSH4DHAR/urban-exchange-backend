@@ -5,7 +5,6 @@ const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
     "1074394604196-610lm57lcj94ovdii34lfib07mcolbqj.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
-
 const signUp = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then((hash) => {
         const user = new User({
@@ -274,10 +273,17 @@ const addToUserWishlist = async (req, res, next) => {
     const options = { runValidators: true, new: true };
     User.findOneAndUpdate({ "_id": _id }, query, options).then(
         (result) => {
-            res.status(200).json({
-                status: "success",
-                message: "added products to user listed products",
-            });
+            if (result != null) {
+                res.status(200).json({
+                    status: "success",
+                    message: "added products to user listed products",
+                });
+            } else {
+                res.status(404).json({
+                    message: "user not found",
+                    data: null
+                })
+            }
         },
         (error) => {
             console.error(error);

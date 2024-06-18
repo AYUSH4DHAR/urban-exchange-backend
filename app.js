@@ -23,7 +23,6 @@ const io = new Server(server, {
 });
 
 
-
 mongoose
     .connect('mongodb+srv://uex:uex@urbanexchange.54fzlvg.mongodb.net/?retryWrites=true&w=majority')
     .then(() => {
