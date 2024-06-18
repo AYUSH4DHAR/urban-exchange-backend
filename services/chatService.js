@@ -80,6 +80,7 @@ chatService.saveChat = async (req, res, next) => {
             seller: sellerInf._id,
             messages: [],
             unread: 0,
+            unreadBy: sellerInf._id,
         };
         const chat = new Chat(chatObj);
         const savedChat = await chat.save();
