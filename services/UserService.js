@@ -146,7 +146,7 @@ const getAllUsers = async (req, res, next) => {
 const getUserById = async (req, res, next) => {
     await _getUserById(req.params.id).then(
         (user) => {
-            user.password = undefined;
+            if (user) user.password = undefined;
             res.status(200).json({
                 message: "success",
                 data: user,
