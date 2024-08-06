@@ -57,7 +57,6 @@ chatService.getChatsForProduct = async (req, res, next) => {
 chatService.saveChat = async (req, res, next) => {
     const buyerInf = req.body.currentUser;
     const sellerInf = req.body.seller;
-    console.log(req.body, 'here');
     try {
         let chatObj = {
             buyer: buyerInf._id,
