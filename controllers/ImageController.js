@@ -44,13 +44,16 @@ imageRouter.post("/multiple", imageService.upload.array('images', 10), (req, res
 imageRouter.get("/imageUrl/:name", async (req, res, next) => {
     const imageName = req.params.name;
     const imageData = await Image.findOne({ name: imageName });
+    let optimizedUrl = '';
     if (imageData && imageData.secureUrl) {
-        let optimizedUrl = imageData.secureUrl.split('.')[0] + '.webp';
-        imageData.optimizedUrl = optimizedUrl;
+        optimizedUrl = imageData.secureUrl.slice(0, -3) + 'webp';
     }
     res.json({
         message: "Success",
-        data: imageData
+        data: {
+            imageData,
+            optimizedUrl: optimizedUrl
+        }
     })
 })
 imageRouter.get("/:name", (req, res, next) => {

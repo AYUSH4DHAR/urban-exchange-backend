@@ -12,6 +12,7 @@ const signUp = async (req, res, next) => {
             password: hash,// Assuming 'username' is a field in your form
             firstName: req.body.firstName, // Assuming 'firstName' is a field in your form
             lastName: req.body.lastName,   // Assuming 'lastName' is a field in your form
+            username: `${req.body.firstName.toLocaleLowerCase()}_${req.body.lastName.toLocaleLowerCase()}`,
             phone: [req.body.phone]
         });
         user
